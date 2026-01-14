@@ -7,9 +7,9 @@ export default function TestimonialsSection() {
     <section className="py-16 sm:py-24 bg-secondary">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="font-headline text-3xl md:text-4xl font-bold">What Our Students Say</h2>
+          <h2 className="font-headline text-3xl md:text-4xl font-bold">ماذا يقول طلابنا</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Real stories from drivers who started their journey with us.
+            قصص حقيقية من سائقين بدأوا رحلتهم معنا.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -25,7 +25,7 @@ export default function TestimonialsSection() {
               </CardContent>
               <div className="bg-muted p-6 mt-auto">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mr-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center ml-4">
                     <testimonial.avatar className="w-6 h-6" />
                   </div>
                   <div>

@@ -7,7 +7,7 @@ export default function Logo({ className }: { className?: string }) {
     <Link href="/" className={cn("flex items-center gap-2", className)}>
       <Car className="h-8 w-8 text-primary" />
       <span className="text-xl font-bold font-headline text-primary hidden sm:inline-block">
-        DriveSafe Academy
+        أكاديمية القيادة الآمنة
       </span>
     </Link>
   );

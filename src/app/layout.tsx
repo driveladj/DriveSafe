@@ -5,9 +5,9 @@ import SiteHeader from '@/components/layout/header';
 import SiteFooter from '@/components/layout/footer';
 
 export const metadata: Metadata = {
-  title: 'DriveSafe Academy',
-  description: 'Your trusted partner in learning to drive safely and confidently.',
-  keywords: ['driving school', 'learn to drive', 'driving lessons', 'auto ecole'],
+  title: 'أكاديمية القيادة الآمنة',
+  description: 'شريكك الموثوق لتعلم القيادة بأمان وثقة.',
+  keywords: ['مدرسة لتعليم قيادة السيارات', 'تعلم القيادة', 'دروس القيادة', 'تعليم السياقة'],
 };
 
 export default function RootLayout({
@@ -16,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
         <div className="relative flex min-h-screen flex-col bg-background">

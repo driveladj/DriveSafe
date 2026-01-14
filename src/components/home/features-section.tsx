@@ -6,9 +6,9 @@ export default function FeaturesSection() {
     <section className="py-16 sm:py-24 bg-background">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="font-headline text-3xl md:text-4xl font-bold">Why Choose DriveSafe Academy?</h2>
+          <h2 className="font-headline text-3xl md:text-4xl font-bold">لماذا تختار أكاديمية القيادة الآمنة؟</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            We are committed to providing the highest quality driving education.
+            نحن ملتزمون بتقديم أعلى مستويات الجودة في تعليم القيادة.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

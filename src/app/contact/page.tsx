@@ -7,9 +7,9 @@ export default function ContactPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Get In Touch</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">تواصل معنا</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            We&apos;re here to help! Whether you have a question about our courses or need assistance, feel free to reach out.
+            نحن هنا للمساعدة! سواء كان لديك سؤال حول دوراتنا أو كنت بحاجة إلى مساعدة، فلا تتردد في التواصل معنا.
           </p>
         </div>
       </section>
@@ -20,13 +20,13 @@ export default function ContactPage() {
             <Card>
               <CardHeader className="flex flex-row items-center gap-4">
                 <Phone className="w-8 h-8 text-primary"/>
-                <CardTitle className="font-headline">By Phone</CardTitle>
+                <CardTitle className="font-headline">عبر الهاتف</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Our team is available during business hours.</p>
-                <p className="text-lg font-semibold mt-2 text-primary">+1 (234) 567-890</p>
+                <p className="text-muted-foreground">فريقنا متاح خلال ساعات العمل.</p>
+                <p className="text-lg font-semibold mt-2 text-primary" dir="ltr">+1 (234) 567-890</p>
                 <Button variant="link" className="p-0 h-auto mt-2 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4"/> Direct WhatsApp
+                  <MessageSquare className="w-4 h-4"/> واتساب مباشر
                 </Button>
               </CardContent>
             </Card>
@@ -34,10 +34,10 @@ export default function ContactPage() {
             <Card>
               <CardHeader className="flex flex-row items-center gap-4">
                 <Mail className="w-8 h-8 text-primary"/>
-                <CardTitle className="font-headline">By Email</CardTitle>
+                <CardTitle className="font-headline">عبر البريد الإلكتروني</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Send us an email anytime.</p>
+                <p className="text-muted-foreground">أرسل لنا بريدًا إلكترونيًا في أي وقت.</p>
                 <p className="text-lg font-semibold mt-2 text-primary">contact@drivesafe.com</p>
               </CardContent>
             </Card>
@@ -45,17 +45,17 @@ export default function ContactPage() {
             <Card>
               <CardHeader className="flex flex-row items-center gap-4">
                 <MapPin className="w-8 h-8 text-primary"/>
-                <CardTitle className="font-headline">Our Location</CardTitle>
+                <CardTitle className="font-headline">موقعنا</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">123 Driving Lane, Safety City, 45678</p>
-                <p className="text-lg font-semibold mt-2 text-primary">Working Hours:</p>
-                <p className="text-sm text-muted-foreground">Mon-Fri: 9am - 7pm | Sat: 10am - 4pm</p>
+                <p className="text-muted-foreground">123 شارع القيادة، مدينة السلامة، 45678</p>
+                <p className="text-lg font-semibold mt-2 text-primary">ساعات العمل:</p>
+                <p className="text-sm text-muted-foreground">الاثنين - الجمعة: 9 صباحًا - 7 مساءً | السبت: 10 صباحًا - 4 مساءً</p>
               </CardContent>
             </Card>
             
             <a href="#" className="flex items-center gap-2 text-primary font-semibold hover:underline">
-                <Facebook className="w-5 h-5"/> Follow us on Facebook
+                <Facebook className="w-5 h-5"/> تابعنا على فيسبوك
             </a>
           </div>
           

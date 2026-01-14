@@ -6,9 +6,9 @@ export default function RegisterPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Join DriveSafe Academy</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">انضم إلى أكاديمية القيادة الآمنة</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            Take the first step towards your driving independence. Fill out the form below to get started.
+            اتخذ الخطوة الأولى نحو استقلاليتك في القيادة. املأ النموذج أدناه للبدء.
           </p>
         </div>
       </section>
@@ -17,9 +17,9 @@ export default function RegisterPage() {
         <div className="container max-w-3xl">
           <RegistrationForm />
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Already have an account?{" "}
+            هل لديك حساب بالفعل؟{" "}
             <Link href="/login" className="font-semibold text-primary hover:underline">
-              Sign in
+              تسجيل الدخول
             </Link>
           </p>
         </div>

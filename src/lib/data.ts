@@ -3,61 +3,61 @@ import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Use
 import { PlaceHolderImages } from "./placeholder-images";
 
 export const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About' },
-    { href: '/courses', label: 'Courses' },
-    { href: '/pricing', label: 'Pricing' },
-    { href: '/banners', label: 'Banners' },
-    { href: '/gallery', label: 'Gallery' },
-    { href: '/faq', label: 'FAQ' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/', label: 'الرئيسية' },
+    { href: '/about', label: 'من نحن' },
+    { href: '/courses', label: 'الدورات' },
+    { href: '/pricing', label: 'الأسعار' },
+    { href: '/banners', label: 'اللافتات' },
+    { href: '/gallery', label: 'المعرض' },
+    { href: '/faq', label: 'الأسئلة الشائعة' },
+    { href: '/contact', label: 'اتصل بنا' },
 ];
 
 export const features = [
     {
         Icon: Award,
-        title: "Certified Instructors",
-        description: "Our instructors are government-certified, experienced, and dedicated to your success.",
+        title: "مدربون معتمدون",
+        description: "مدربونا معتمدون من الحكومة، ذوو خبرة، ومكرسون لنجاحك.",
     },
     {
         Icon: Star,
-        title: "High Success Rate",
-        description: "We pride ourselves on a high pass rate, thanks to our effective teaching methods.",
+        title: "معدل نجاح مرتفع",
+        description: "نفخر بمعدل نجاح مرتفع، بفضل طرق التدريس الفعالة لدينا.",
     },
     {
         Icon: Car,
-        title: "Modern Vehicles",
-        description: "Learn to drive in a fleet of new, safe, and dual-controlled vehicles.",
+        title: "مركبات حديثة",
+        description: "تعلم القيادة في أسطول من المركبات الجديدة والآمنة والمزودة بتحكم مزدوج.",
     },
     {
         Icon: Users,
-        title: "Personalized Training",
-        description: "We tailor our lessons to your individual learning pace and needs for better results.",
+        title: "تدريب شخصي",
+        description: "نقوم بتصميم دروسنا لتناسب وتيرة تعلمك واحتياجاتك الفردية لتحقيق نتائج أفضل.",
     },
 ];
 
 export const courses = [
   { 
     id: 'b-license', 
-    name: 'Class B License', 
-    description: 'Comprehensive training for passenger cars, from basic maneuvers to complex traffic situations.', 
-    details: '40 hours of training, including 20 hours of theory and 20 hours of practical lessons.', 
+    name: 'رخصة الفئة ب', 
+    description: 'تدريب شامل لسيارات الركاب، من المناورات الأساسية إلى المواقف المرورية المعقدة.', 
+    details: '40 ساعة من التدريب، تشمل 20 ساعة من الدروس النظرية و 20 ساعة من الدروس العملية.', 
     Icon: Car,
     image: PlaceHolderImages.find(img => img.id === 'car-interior-1'),
   },
   { 
     id: 'moto-license', 
-    name: 'Motorcycle License', 
-    description: 'Learn to ride and handle motorcycles safely on the road with our expert guidance.', 
-    details: '25 hours of specialized training for all types of motorcycles (A1, A2, A).', 
+    name: 'رخصة دراجة نارية', 
+    description: 'تعلم قيادة الدراجات النارية والتحكم بها بأمان على الطريق مع توجيهات خبرائنا.', 
+    details: '25 ساعة من التدريب المتخصص لجميع أنواع الدراجات النارية (A1, A2, A).', 
     Icon: Bike,
     image: PlaceHolderImages.find(img => img.id === 'motorcycle-1'),
   },
   {
     id: 'theory-course',
-    name: 'Theory-Only Course',
-    description: 'Prepare for your theoretical exam with our intensive classroom and online resources.',
-    details: '20 hours of in-depth classroom sessions covering all traffic laws and signs.',
+    name: 'دورة نظرية فقط',
+    description: 'استعد لامتحانك النظري من خلال مواردنا المكثفة في الفصول الدراسية وعبر الإنترنت.',
+    details: '20 ساعة من الجلسات الدراسية المعمقة التي تغطي جميع قوانين وإشارات المرور.',
     Icon: Presentation,
     image: PlaceHolderImages.find(img => img.id === 'classroom-1'),
   }
@@ -66,74 +66,74 @@ export const courses = [
 export const pricingTiers = [
   { 
     id: 'basic', 
-    name: 'Basic Package', 
+    name: 'الباقة الأساسية', 
     price: '450', 
-    licenseType: 'Class B', 
-    features: ['20 Theory Lessons', '20 Practical Lessons', 'Internal Exam'], 
+    licenseType: 'الفئة ب', 
+    features: ['20 درسًا نظريًا', '20 درسًا عمليًا', 'امتحان داخلي'], 
     bestDeal: false 
   },
   { 
     id: 'premium', 
-    name: 'Premium Package', 
+    name: 'الباقة المميزة', 
     price: '650', 
-    licenseType: 'Class B', 
-    features: ['Unlimited Theory Lessons', '30 Practical Lessons', 'Official Exam Fee Included', 'Personalized Progress Tracking'], 
+    licenseType: 'الفئة ب', 
+    features: ['دروس نظرية غير محدودة', '30 درسًا عمليًا', 'شامل رسوم الامتحان الرسمي', 'تتبع التقدم الشخصي'], 
     bestDeal: true 
   },
   { 
     id: 'motorcycle', 
-    name: 'Motorcycle Course', 
+    name: 'دورة الدراجات النارية', 
     price: '350', 
-    licenseType: 'Motorcycle (A)', 
-    features: ['15 Theory Lessons', '20 Practical Lessons', 'Gear Provided'], 
+    licenseType: 'دراجة نارية (A)', 
+    features: ['15 درسًا نظريًا', '20 درسًا عمليًا', 'توفير المعدات'], 
     bestDeal: false 
   },
 ];
 
 
 export const faqs = [
-  { q: 'What are the requirements to enroll?', a: 'You must be at least 18 years old and possess a valid national ID card. For some license categories, a medical certificate may be required.' },
-  { q: 'How long does the training take?', a: 'The duration depends on the package you choose and your personal learning speed. On average, students complete the Class B license training in 2 to 3 months.' },
-  { q: 'Can I schedule lessons on weekends?', a: 'Yes, we offer flexible scheduling, including evenings and weekends, to accommodate your busy lifestyle. Please contact us to check for availability.' },
-  { q: 'What is included in the package price?', a: 'Each package price includes the specified number of theory and practical lessons. Official exam fees may be separate unless specified, as in our Premium Package.' },
-  { q: 'Do I need my own vehicle?', a: 'No, all training is conducted in our modern, dual-controlled vehicles for your safety and convenience. For motorcycle courses, we also provide the vehicle and safety gear.' },
+  { q: 'ما هي متطلبات التسجيل؟', a: 'يجب أن يكون عمرك 18 عامًا على الأقل وأن تمتلك بطاقة هوية وطنية سارية. قد تكون هناك حاجة لشهادة طبية لبعض فئات الرخص.' },
+  { q: 'كم من الوقت يستغرق التدريب؟', a: 'تعتمد المدة على الباقة التي تختارها وسرعة تعلمك الشخصية. في المتوسط، يكمل الطلاب تدريب رخصة الفئة ب في غضون شهرين إلى 3 أشهر.' },
+  { q: 'هل يمكنني جدولة الدروس في عطلات نهاية الأسبوع؟', a: 'نعم، نحن نقدم جداول زمنية مرنة، بما في ذلك الأمسيات وعطلات نهاية الأسبوع، لتناسب جدولك المزدحم. يرجى الاتصال بنا للتحقق من التوفر.' },
+  { q: 'ماذا يشمل سعر الباقة؟', a: 'يشمل سعر كل باقة العدد المحدد من الدروس النظرية والعملية. قد تكون رسوم الامتحان الرسمي منفصلة ما لم يُنص على خلاف ذلك، كما في باقتنا المميزة.' },
+  { q: 'هل أحتاج إلى مركبتي الخاصة؟', a: 'لا، يتم إجراء جميع التدريبات في مركباتنا الحديثة ذات التحكم المزدوج من أجل سلامتك وراحتك. بالنسبة لدورات الدراجات النارية، نوفر أيضًا المركبة ومعدات السلامة.' },
 ];
 
 export const testimonials = [
   {
-    name: "Aisha K.",
-    role: "New Driver",
+    name: "عائشة ك.",
+    role: "سائقة جديدة",
     avatar: Smile,
-    comment: "DriveSafe Academy made learning to drive so easy and stress-free! My instructor was incredibly patient and supportive. I passed my test on the first try!",
+    comment: "أكاديمية القيادة الآمنة جعلت تعلم القيادة سهلاً وخالياً من التوتر! كان مدربي صبوراً وداعماً بشكل لا يصدق. لقد نجحت في اختباري من المحاولة الأولى!",
   },
   {
-    name: "Mohammed R.",
-    role: "Motorcycle Enthusiast",
+    name: "محمد ر.",
+    role: "متحمس للدراجات النارية",
     avatar: Users,
-    comment: "The motorcycle course was fantastic. The instructors are true experts and focus heavily on safety. I feel much more confident on the road now. Highly recommended!",
+    comment: "كانت دورة الدراجات النارية رائعة. المدربون خبراء حقيقيون ويركزون بشدة على السلامة. أشعر بثقة أكبر على الطريق الآن. موصى به بشدة!",
   },
   {
-    name: "Fatima Z.",
-    role: "Student",
+    name: "فاطمة ز.",
+    role: "طالبة",
     avatar: HeartHandshake,
-    comment: "I was very nervous about driving, but the team at DriveSafe was so welcoming. They helped me build my confidence step by step. A wonderful experience!",
+    comment: "كنت متوترة للغاية بشأن القيادة، لكن فريق أكاديمية القيادة الآمنة كان مرحبًا جدًا. لقد ساعدوني في بناء ثقتي خطوة بخطوة. تجربة رائعة!",
   },
 ];
 
 export const trafficSigns = [
     {
-      title: "Stop Sign",
-      description: "A mandatory sign requiring drivers to come to a complete stop and ensure the intersection is clear before proceeding.",
+      title: "علامة قف",
+      description: "علامة إلزامية تتطلب من السائقين التوقف تمامًا والتأكد من خلو التقاطع قبل المتابعة.",
       image: PlaceHolderImages.find(img => img.id === 'stop-sign'),
     },
     {
-      title: "Yield Sign",
-      description: "Indicates that drivers must slow down and be prepared to stop to let other traffic (including pedestrians and cyclists) pass before proceeding.",
+      title: "علامة إعطاء الأولوية",
+      description: "تشير إلى أنه يجب على السائقين إبطاء السرعة والاستعداد للتوقف للسماح بمرور حركة المرور الأخرى (بما في ذلك المشاة وراكبي الدراجات) قبل المتابعة.",
       image: PlaceHolderImages.find(img => img.id === 'yield-sign'),
     },
     {
-      title: "Speed Limit 50",
-      description: "Sets the maximum legal speed at 50 kilometers per hour (or miles per hour, depending on the country) for the stretch of road ahead.",
+      title: "حد السرعة 50",
+      description: "تحدد السرعة القانونية القصوى عند 50 كيلومترًا في الساعة (أو ميلًا في الساعة، حسب البلد) لجزء الطريق المقبل.",
       image: PlaceHolderImages.find(img => img.id === 'speed-limit-sign'),
     }
 ]

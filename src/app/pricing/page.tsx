@@ -10,9 +10,9 @@ export default function PricingPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Flexible Pricing Plans</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">خطط أسعار مرنة</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            Choose the package that best suits your learning goals and budget. All plans are designed to provide maximum value.
+            اختر الباقة التي تناسب أهدافك التعليمية وميزانيتك. جميع الخطط مصممة لتوفير أقصى قيمة.
           </p>
         </div>
       </section>
@@ -30,7 +30,7 @@ export default function PricingPage() {
               >
                 {tier.bestDeal && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-2">
-                    <Star size={16} className="fill-current"/> Best Value
+                    <Star size={16} className="fill-current"/> أفضل قيمة
                   </div>
                 )}
                 <CardHeader className="text-center">
@@ -38,7 +38,7 @@ export default function PricingPage() {
                   <CardDescription>{tier.licenseType}</CardDescription>
                   <div className="py-4">
                     <span className="font-headline text-5xl font-bold">${tier.price}</span>
-                    <span className="text-muted-foreground">/ package</span>
+                    <span className="text-muted-foreground">/ للباقة</span>
                   </div>
                 </CardHeader>
                 <CardContent className="flex-grow">
@@ -53,7 +53,7 @@ export default function PricingPage() {
                 </CardContent>
                 <CardFooter>
                   <Button asChild className={cn("w-full", !tier.bestDeal && "bg-accent hover:bg-accent/80")} size="lg">
-                    <Link href="/register">Choose Plan</Link>
+                    <Link href="/register">اختر الخطة</Link>
                   </Button>
                 </CardFooter>
               </Card>

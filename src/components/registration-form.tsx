@@ -28,18 +28,18 @@ import { useState } from "react"
 import { courses } from "@/lib/data"
 
 const formSchema = z.object({
-  firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
-  lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
-  dob: z.date({ required_error: "A date of birth is required." }),
-  birthPlace: z.string().min(2, { message: "Place of birth is required." }),
-  gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
-  licenseType: z.string({ required_error: "Please select a license type." }),
-  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "Please enter a valid phone number." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  firstName: z.string().min(2, { message: "يجب أن يتكون الاسم الأول من حرفين على الأقل." }),
+  lastName: z.string().min(2, { message: "يجب أن يتكون اسم العائلة من حرفين على الأقل." }),
+  dob: z.date({ required_error: "تاريخ الميلاد مطلوب." }),
+  birthPlace: z.string().min(2, { message: "مكان الميلاد مطلوب." }),
+  gender: z.enum(["male", "female", "other"], { required_error: "يرجى تحديد الجنس." }),
+  licenseType: z.string({ required_error: "يرجى تحديد نوع الرخصة." }),
+  phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "يرجى إدخال رقم هاتف صالح." }),
+  password: z.string().min(8, { message: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
   confirmPassword: z.string(),
-  acceptTerms: z.boolean().refine((val) => val === true, { message: "You must accept the terms and conditions." }),
+  acceptTerms: z.boolean().refine((val) => val === true, { message: "يجب عليك قبول الشروط والأحكام." }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "كلمات المرور غير متطابقة",
   path: ["confirmPassword"],
 });
 
@@ -69,8 +69,8 @@ export default function RegistrationForm() {
         setTimeout(() => {
             setIsLoading(false)
             toast({
-                title: "Registration Successful!",
-                description: "Welcome to DriveSafe Academy. We'll be in touch shortly.",
+                title: "تم التسجيل بنجاح!",
+                description: "مرحبًا بك في أكاديمية القيادة الآمنة. سنتواصل معك قريبًا.",
             })
             form.reset()
         }, 2000)
@@ -81,20 +81,20 @@ export default function RegistrationForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-8 border rounded-lg bg-card">
                 <div className="grid md:grid-cols-2 gap-8">
                     <FormField control={form.control} name="firstName" render={({ field }) => (
-                        <FormItem><FormLabel>First Name</FormLabel><FormControl><Input placeholder="John" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>الاسم الأول</FormLabel><FormControl><Input placeholder="John" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="lastName" render={({ field }) => (
-                        <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>اسم العائلة</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
                      <FormField control={form.control} name="dob" render={({ field }) => (
-                        <FormItem className="flex flex-col"><FormLabel>Date of Birth</FormLabel>
+                        <FormItem className="flex flex-col"><FormLabel>تاريخ الميلاد</FormLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                            {field.value ? format(field.value, "PPP") : <span>اختر تاريخًا</span>}
                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                         </Button>
                                     </FormControl>
@@ -106,25 +106,25 @@ export default function RegistrationForm() {
                         <FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="birthPlace" render={({ field }) => (
-                        <FormItem><FormLabel>Place of Birth</FormLabel><FormControl><Input placeholder="City, Country" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>مكان الميلاد</FormLabel><FormControl><Input placeholder="المدينة، البلد" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                 <FormField control={form.control} name="gender" render={({ field }) => (
-                    <FormItem className="space-y-3"><FormLabel>Gender</FormLabel>
+                    <FormItem className="space-y-3"><FormLabel>الجنس</FormLabel>
                         <FormControl>
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="male" /></FormControl><FormLabel className="font-normal">Male</FormLabel></FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="female" /></FormControl><FormLabel className="font-normal">Female</FormLabel></FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="other" /></FormControl><FormLabel className="font-normal">Other</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="male" /></FormControl><FormLabel className="font-normal">ذكر</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="female" /></FormControl><FormLabel className="font-normal">أنثى</FormLabel></FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="other" /></FormControl><FormLabel className="font-normal">آخر</FormLabel></FormItem>
                             </RadioGroup>
                         </FormControl>
                     <FormMessage /></FormItem>
                 )} />
                 <div className="grid md:grid-cols-2 gap-8">
                     <FormField control={form.control} name="licenseType" render={({ field }) => (
-                        <FormItem><FormLabel>License/Course Type</FormLabel>
+                        <FormItem><FormLabel>نوع الرخصة/الدورة</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select a course" /></SelectTrigger></FormControl>
+                                <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                                 <SelectContent>
                                     {courses.map(course => <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>)}
                                 </SelectContent>
@@ -132,30 +132,30 @@ export default function RegistrationForm() {
                         <FormMessage /></FormItem>
                     )} />
                      <FormField control={form.control} name="phone" render={({ field }) => (
-                        <FormItem><FormLabel>Phone Number (for login)</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>رقم الهاتف (لتسجيل الدخول)</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                  <div className="grid md:grid-cols-2 gap-8">
                      <FormField control={form.control} name="password" render={({ field }) => (
-                        <FormItem><FormLabel>Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>كلمة المرور</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-                        <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>تأكيد كلمة المرور</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                  <FormField control={form.control} name="acceptTerms" render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                         <div className="space-y-1 leading-none">
-                            <FormLabel>Accept terms and conditions</FormLabel>
-                            <FormDescription>You agree to our <a href="/terms" className="underline">Terms of Service</a> and <a href="/privacy" className="underline">Privacy Policy</a>.</FormDescription>
+                            <FormLabel>أوافق على الشروط والأحكام</FormLabel>
+                            <FormDescription>أنت توافق على <a href="/terms" className="underline">شروط الخدمة</a> و <a href="/privacy" className="underline">سياسة الخصوصية</a>.</FormDescription>
                         </div>
                     </FormItem>
                 )} />
 
                 <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Account
+                    {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                    إنشاء حساب
                 </Button>
             </form>
         </Form>

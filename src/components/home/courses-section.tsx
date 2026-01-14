@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { courses } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function CoursesSection() {
   return (
@@ -11,13 +11,13 @@ export default function CoursesSection() {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
             <div className="mb-4 md:mb-0">
-                <h2 className="font-headline text-3xl md:text-4xl font-bold">Our Driving Courses</h2>
+                <h2 className="font-headline text-3xl md:text-4xl font-bold">دورات القيادة لدينا</h2>
                 <p className="mt-2 max-w-2xl text-lg text-muted-foreground">
-                    From beginners to advanced, we have a course that fits your needs.
+                    من المبتدئين إلى المتقدمين، لدينا دورة تناسب احتياجاتك.
                 </p>
             </div>
             <Button asChild variant="outline">
-                <Link href="/courses">View All Courses <ArrowRight className="ml-2"/></Link>
+                <Link href="/courses">عرض كل الدورات <ArrowLeft className="mr-2"/></Link>
             </Button>
         </div>
 
@@ -46,7 +46,7 @@ export default function CoursesSection() {
               <CardContent className="flex-grow flex flex-col">
                 <CardDescription className="flex-grow">{course.description}</CardDescription>
                 <Button asChild variant="link" className="p-0 h-auto justify-start mt-4">
-                  <Link href={`/courses#${course.id}`}>Learn More <ArrowRight className="ml-2" size={16} /></Link>
+                  <Link href={`/courses#${course.id}`}>اعرف المزيد <ArrowLeft className="mr-2" size={16} /></Link>
                 </Button>
               </CardContent>
             </Card>

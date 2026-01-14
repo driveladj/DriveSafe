@@ -6,19 +6,19 @@ export default function AboutPage() {
     const aboutImage = PlaceHolderImages.find(p => p.id === 'about-us-image');
 
     const stats = [
-        { value: "10+", label: "Years of Experience" },
-        { value: "5,000+", label: "Successful Students" },
-        { value: "98%", label: "First-Time Pass Rate" },
-        { value: "15", label: "Certified Instructors" },
+        { value: "10+", label: "سنوات من الخبرة" },
+        { value: "5,000+", label: "طالب ناجح" },
+        { value: "98%", label: "معدل النجاح من المحاولة الأولى" },
+        { value: "15", label: "مدرب معتمد" },
     ];
 
     return (
         <>
             <section className="py-16 sm:py-24 bg-secondary">
                 <div className="container text-center">
-                    <h1 className="font-headline text-4xl md:text-5xl font-bold">About DriveSafe Academy</h1>
+                    <h1 className="font-headline text-4xl md:text-5xl font-bold">عن أكاديمية القيادة الآمنة</h1>
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                        Pioneering excellence in driver education with a commitment to safety, confidence, and lifelong driving skills.
+                        رواد التميز في تعليم القيادة مع الالتزام بالسلامة والثقة ومهارات القيادة مدى الحياة.
                     </p>
                 </div>
             </section>
@@ -26,12 +26,12 @@ export default function AboutPage() {
             <section className="py-16 sm:py-24">
                 <div className="container grid md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
-                        <h2 className="font-headline text-3xl font-bold text-primary">Our Story</h2>
+                        <h2 className="font-headline text-3xl font-bold text-primary">قصتنا</h2>
                         <p className="text-muted-foreground">
-                            Founded over a decade ago, DriveSafe Academy was born from a passion for creating safer roads, one driver at a time. We saw a need for a driving school that went beyond just teaching students to pass a test. Our goal was, and remains, to cultivate a deep understanding of road safety and vehicle control, empowering our students with the confidence to handle any driving situation.
+                            تأسست أكاديمية القيادة الآمنة منذ أكثر من عقد من الزمان، ونبعت من شغف لخلق طرق أكثر أمانًا، سائقًا تلو الآخر. لقد رأينا حاجة إلى مدرسة لتعليم القيادة تتجاوز مجرد تعليم الطلاب لاجتياز الاختبار. كان هدفنا، ولا يزال، هو تنمية فهم عميق لسلامة الطرق والتحكم في المركبات، وتمكين طلابنا بالثقة للتعامل مع أي موقف قيادة.
                         </p>
                         <p className="text-muted-foreground">
-                            We have grown from a small team with two cars to a leading institution in the region, but our core values of patience, professionalism, and personalized instruction have never wavered.
+                            لقد نمونا من فريق صغير بسيارتين إلى مؤسسة رائدة في المنطقة، لكن قيمنا الأساسية المتمثلة في الصبر والاحترافية والتعليم المخصص لم تتزعزع أبدًا.
                         </p>
                     </div>
                     <div>
@@ -66,18 +66,18 @@ export default function AboutPage() {
                 <div className="container grid md:grid-cols-3 gap-8 text-center">
                     <div className="space-y-4">
                         <Target className="mx-auto w-12 h-12 text-primary"/>
-                        <h3 className="font-headline text-2xl font-bold">Our Mission</h3>
-                        <p className="text-muted-foreground">To provide the highest quality driver education that equips students with the skills, knowledge, and mindset for a lifetime of safe driving.</p>
+                        <h3 className="font-headline text-2xl font-bold">مهمتنا</h3>
+                        <p className="text-muted-foreground">توفير أعلى مستويات الجودة في تعليم القيادة الذي يزود الطلاب بالمهارات والمعرفة والعقلية اللازمة لقيادة آمنة مدى الحياة.</p>
                     </div>
                     <div className="space-y-4">
                         <ShieldCheck className="mx-auto w-12 h-12 text-primary"/>
-                        <h3 className="font-headline text-2xl font-bold">Our Vision</h3>
-                        <p className="text-muted-foreground">To be the most trusted and effective driving academy, setting the standard for road safety and driver confidence in our community.</p>
+                        <h3 className="font-headline text-2xl font-bold">رؤيتنا</h3>
+                        <p className="text-muted-foreground">أن نكون أكاديمية القيادة الأكثر ثقة وفعالية، وأن نضع معيارًا لسلامة الطرق وثقة السائق في مجتمعنا.</p>
                     </div>
                     <div className="space-y-4">
                         <CheckCircle className="mx-auto w-12 h-12 text-primary"/>
-                        <h3 className="font-headline text-2xl font-bold">Our Values</h3>
-                        <p className="text-muted-foreground">Safety First, Professionalism, Patience, Integrity, and Student Success are the pillars that guide everything we do.</p>
+                        <h3 className="font-headline text-2xl font-bold">قيمنا</h3>
+                        <p className="text-muted-foreground">السلامة أولاً، الاحترافية، الصبر، النزاهة، ونجاح الطالب هي الركائز التي توجه كل ما نقوم به.</p>
                     </div>
                 </div>
             </section>

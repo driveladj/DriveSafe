@@ -13,9 +13,9 @@ export default function GalleryPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Our Gallery</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">معرض الصور</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            Explore our academy, state-of-the-art training vehicles, and the moments that make us proud.
+            استكشف أكاديميتنا، ومركبات التدريب الحديثة، واللحظات التي تجعلنا فخورين.
           </p>
         </div>
       </section>

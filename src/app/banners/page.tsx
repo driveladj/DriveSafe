@@ -7,9 +7,9 @@ export default function BannersPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Important Traffic Signs</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">إشارات المرور الهامة</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            A quick reference guide for some of the most common and important road signs you&apos;ll encounter.
+            دليل مرجعي سريع لبعض أهم وأشهر إشارات الطرق التي ستواجهها.
           </p>
         </div>
       </section>

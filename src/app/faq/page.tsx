@@ -6,9 +6,9 @@ export default function FAQPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Frequently Asked Questions</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">الأسئلة الشائعة</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            Find answers to common questions about our courses, enrollment process, and more.
+            اعثر على إجابات للأسئلة الشائعة حول دوراتنا وعملية التسجيل والمزيد.
           </p>
         </div>
       </section>
@@ -18,7 +18,7 @@ export default function FAQPage() {
             <Accordion type="single" collapsible className="w-full space-y-4">
                 {faqs.map((faq, index) => (
                     <AccordionItem key={index} value={`item-${index}`} className="bg-card rounded-lg border px-4">
-                        <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline">{faq.q}</AccordionTrigger>
+                        <AccordionTrigger className="text-right font-semibold text-lg hover:no-underline">{faq.q}</AccordionTrigger>
                         <AccordionContent className="text-muted-foreground text-base">
                             {faq.a}
                         </AccordionContent>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { courses } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function CoursesPage() {
@@ -9,9 +9,9 @@ export default function CoursesPage() {
     <>
       <section className="py-16 sm:py-24 bg-secondary">
         <div className="container text-center">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold">Our Driving Courses</h1>
+          <h1 className="font-headline text-4xl md:text-5xl font-bold">دورات القيادة لدينا</h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            We offer a range of courses tailored to meet your specific needs, whether you&apos;re a new driver or looking to upgrade your skills.
+            نحن نقدم مجموعة من الدورات المصممة لتلبية احتياجاتك الخاصة، سواء كنت سائقًا جديدًا أو تتطلع إلى تحسين مهاراتك.
           </p>
         </div>
       </section>
@@ -43,7 +43,7 @@ export default function CoursesPage() {
                   <p className="text-muted-foreground text-lg">{course.description}</p>
                   <p className="font-semibold text-primary">{course.details}</p>
                   <Button asChild className="mt-4 bg-accent hover:bg-accent/90">
-                    <Link href="/register">Enroll in this Course <ArrowRight className="ml-2"/></Link>
+                    <Link href="/register">التسجيل في هذه الدورة <ArrowLeft className="mr-2"/></Link>
                   </Button>
                 </div>
               </div>
