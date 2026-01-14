@@ -67,7 +67,7 @@ export default function PricingPage() {
                     <CardTitle className="font-headline text-2xl">{tier.name}</CardTitle>
                     <CardDescription>{tier.licenseType}</CardDescription>
                     <div className="py-4">
-                      <span className="font-headline text-5xl font-bold">${tier.price}</span>
+                      <span className="font-headline text-5xl font-bold">{tier.price} دج</span>
                       <span className="text-muted-foreground">/ للباقة</span>
                     </div>
                   </CardHeader>
@@ -99,5 +99,3 @@ export default function PricingPage() {
     </>
   );
 }
-
-    

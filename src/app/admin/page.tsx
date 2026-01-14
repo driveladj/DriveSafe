@@ -106,7 +106,7 @@ export default function AdminPage() {
         },
         {
             title: "الإيرادات",
-            value: "$75,345",
+            value: "75,345 دج",
             icon: DollarSign,
             change: "+20.1% عن الشهر الماضي",
         },
@@ -294,7 +294,7 @@ export default function AdminPage() {
                                             {tier.bestDeal && <Star className="w-5 h-5 text-yellow-500 fill-yellow-400" />}
                                         </TableCell>
                                         <TableCell className="font-medium">{tier.name}</TableCell>
-                                        <TableCell>${tier.price}</TableCell>
+                                        <TableCell>{tier.price} دج</TableCell>
                                         <TableCell>{tier.licenseType}</TableCell>
                                         <TableCell className="text-left space-x-2 flex items-center justify-end">
                                             <EditPriceDialog tier={tier} onPriceUpdated={fetchPrices} />
@@ -380,7 +380,3 @@ export default function AdminPage() {
         </div>
     );
 }
-
-    
-
-    
