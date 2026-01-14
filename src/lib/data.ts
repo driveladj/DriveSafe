@@ -12,7 +12,6 @@ export const navItems = [
     { href: '/gallery', label: 'المعرض' },
     { href: '/faq', label: 'الأسئلة الشائعة' },
     { href: '/contact', label: 'اتصل بنا' },
-    { href: '/dashboard', label: 'لوحة التحكم' },
 ];
 
 export const features = [
