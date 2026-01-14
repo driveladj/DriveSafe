@@ -13,20 +13,33 @@ import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
 import DeleteCourseAlert from '@/components/admin/delete-course-alert';
 import EditCourseDialog from '@/components/admin/edit-course-dialog';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, limit, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import AddFaqDialog from '@/components/admin/add-faq-dialog';
 import EditFaqDialog from '@/components/admin/edit-faq-dialog';
 import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
 import HomeContentForm from '@/components/admin/home-content-form';
 
+interface Trainee {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    licenseType: string;
+    createdAt: Timestamp;
+    status?: 'مؤكد' | 'في الانتظار' | 'مكتمل' | 'ملغي';
+}
+
+
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
     const [faqs, setFaqs] = useState<FAQ[]>([]);
+    const [recentTrainees, setRecentTrainees] = useState<Trainee[]>([]);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingFaqs, setLoadingFaqs] = useState(true);
+    const [loadingTrainees, setLoadingTrainees] = useState(true);
+
 
     const fetchCourses = async () => {
         setLoadingCourses(true);
@@ -43,6 +56,19 @@ export default function AdminPage() {
       setLoadingFaqs(false);
     };
 
+    const fetchRecentTrainees = async () => {
+        setLoadingTrainees(true);
+        const traineesCol = query(
+            collection(db, 'users'), 
+            orderBy('createdAt', 'desc'), 
+            limit(5)
+        );
+        const traineeSnapshot = await getDocs(traineesCol);
+        setRecentTrainees(traineeSnapshot.docs.map(doc => doc.data() as Trainee));
+        setLoadingTrainees(false);
+    };
+
+
     useEffect(() => {
         if (!authLoading) {
             if (!user || userDetails?.role !== 'admin') {
@@ -50,6 +76,7 @@ export default function AdminPage() {
             } else {
                 fetchCourses();
                 fetchFaqs();
+                fetchRecentTrainees();
             }
         }
     }, [user, authLoading, userDetails, router]);
@@ -80,14 +107,6 @@ export default function AdminPage() {
             change: "",
         }
     ];
-
-    const recentRegistrations = [
-        { name: "أحمد محمود", course: "رخصة الفئة ب", date: "2023-10-26", status: "مؤكد" },
-        { name: "سارة علي", course: "رخصة دراجة نارية", date: "2023-10-25", status: "في الانتظار" },
-        { name: "خالد حسن", course: "رخصة الفئة ب", date: "2023-10-24", status: "مؤكد" },
-        { name: "نور ياسين", course: "دورة نظرية فقط", date: "2023-10-24", status: "مكتمل" },
-        { name: "علي إبراهيم", course: "رخصة الفئة ب", date: "2023-10-22", status: "ملغي" },
-    ];
     
     if (authLoading || !user || userDetails?.role !== 'admin') {
         return (
@@ -95,6 +114,11 @@ export default function AdminPage() {
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
         );
+    }
+
+    const formatDate = (timestamp: Timestamp | undefined) => {
+        if (!timestamp) return 'غير معروف';
+        return timestamp.toDate().toLocaleDateString('ar-EG');
     }
 
     return (
@@ -122,7 +146,7 @@ export default function AdminPage() {
                  <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle>محتوى الصفحة الرئيسية</CardTitle>
-                        <CardDescription>تعديل النصوص الرئيسية في صفحة الهبوط.</CardDescription>
+                        <CardDescription>تعديل النصوص الرئيسية وأيقونة الموقع في صفحة الهبوط.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <HomeContentForm />
@@ -225,6 +249,11 @@ export default function AdminPage() {
                         <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
                     </CardHeader>
                     <CardContent>
+                       {loadingTrainees ? (
+                           <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                       ) : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -235,36 +264,49 @@ export default function AdminPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentRegistrations.map((reg, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell className="font-medium">{reg.name}</TableCell>
-                                        <TableCell>{reg.course}</TableCell>
-                                        <TableCell>{reg.date}</TableCell>
+                                {recentTrainees.map((trainee) => {
+                                    const status = trainee.status || "في الانتظار";
+                                    return (
+                                    <TableRow key={trainee.uid}>
+                                        <TableCell className="font-medium">{trainee.firstName} {trainee.lastName}</TableCell>
+                                        <TableCell>{trainee.licenseType || 'لم يحدد'}</TableCell>
+                                        <TableCell>{formatDate(trainee.createdAt)}</TableCell>
                                         <TableCell>
                                             <Badge
                                                 variant={
-                                                    reg.status === "مؤكد" ? "default" :
-                                                    reg.status === "مكتمل" ? "secondary" :
-                                                    reg.status === "في الانتظار" ? "outline" :
+                                                    status === "مؤكد" ? "default" :
+                                                    status === "مكتمل" ? "secondary" :
+                                                    status === "في الانتظار" ? "outline" :
                                                     "destructive"
                                                 }
                                                 className={
-                                                    reg.status === "مؤكد" ? "bg-green-500/20 text-green-700 border-green-500/30" :
-                                                    reg.status === "مكتمل" ? "bg-blue-500/20 text-blue-700 border-blue-500/30" :
-                                                    reg.status === "في الانتظار" ? "bg-yellow-500/20 text-yellow-700 border-yellow-500/30" :
+                                                    status === "مؤكد" ? "bg-green-500/20 text-green-700 border-green-500/30" :
+                                                    status === "مكتمل" ? "bg-blue-500/20 text-blue-700 border-blue-500/30" :
+                                                    status === "في الانتظار" ? "bg-yellow-500/20 text-yellow-700 border-yellow-500/30" :
                                                     "bg-red-500/20 text-red-700 border-red-500/30"
                                                 }
                                             >
-                                                {reg.status}
+                                                {status}
                                             </Badge>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                    )
+                                })}
+                                {recentTrainees.length === 0 && (
+                                     <TableRow>
+                                        <TableCell colSpan={4} className="text-center">
+                                            لا توجد تسجيلات حديثة.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
+                        )}
                     </CardContent>
                 </Card>
             </div>
         </div>
     );
 }
+
+    
