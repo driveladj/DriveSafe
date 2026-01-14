@@ -1,7 +1,22 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { faqs } from "@/lib/data";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, orderBy, query, DocumentData } from "firebase/firestore";
 
-export default function FAQPage() {
+type FAQ = {
+  q: string;
+  a: string;
+};
+
+async function getFaqs(): Promise<FAQ[]> {
+  const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
+  const faqSnapshot = await getDocs(faqsCol);
+  return faqSnapshot.docs.map(doc => doc.data() as FAQ);
+}
+
+
+export default async function FAQPage() {
+  const faqs = await getFaqs();
+
   return (
     <>
       <section className="py-16 sm:py-24 bg-secondary">
