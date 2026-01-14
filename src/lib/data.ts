@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Award, Car, Check, HeartHandshake, Motorcycle, Presentation, Smile, Star, Users } from "lucide-react";
+import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Users } from "lucide-react";
 import { PlaceHolderImages } from "./placeholder-images";
 
 export const navItems = [
@@ -50,7 +50,7 @@ export const courses = [
     name: 'Motorcycle License', 
     description: 'Learn to ride and handle motorcycles safely on the road with our expert guidance.', 
     details: '25 hours of specialized training for all types of motorcycles (A1, A2, A).', 
-    Icon: Motorcycle,
+    Icon: Bike,
     image: PlaceHolderImages.find(img => img.id === 'motorcycle-1'),
   },
   {
@@ -96,7 +96,7 @@ export const faqs = [
   { q: 'How long does the training take?', a: 'The duration depends on the package you choose and your personal learning speed. On average, students complete the Class B license training in 2 to 3 months.' },
   { q: 'Can I schedule lessons on weekends?', a: 'Yes, we offer flexible scheduling, including evenings and weekends, to accommodate your busy lifestyle. Please contact us to check for availability.' },
   { q: 'What is included in the package price?', a: 'Each package price includes the specified number of theory and practical lessons. Official exam fees may be separate unless specified, as in our Premium Package.' },
-  { q:_('Do I need my own vehicle?'), a: 'No, all training is conducted in our modern, dual-controlled vehicles for your safety and convenience. For motorcycle courses, we also provide the vehicle and safety gear.' },
+  { q: 'Do I need my own vehicle?', a: 'No, all training is conducted in our modern, dual-controlled vehicles for your safety and convenience. For motorcycle courses, we also provide the vehicle and safety gear.' },
 ];
 
 export const testimonials = [
