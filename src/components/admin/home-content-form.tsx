@@ -23,6 +23,7 @@ import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
 
 const formSchema = z.object({
+  siteName: z.string().min(3, 'Site name is required'),
   heroTitle: z.string().min(5, 'Title is required'),
   heroSubtitle: z.string().min(10, 'Subtitle is required'),
 });
@@ -35,6 +36,7 @@ export default function HomeContentForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      siteName: '',
       heroTitle: '',
       heroSubtitle: '',
     },
@@ -48,6 +50,12 @@ export default function HomeContentForm() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           form.reset(docSnap.data() as z.infer<typeof formSchema>);
+        } else {
+           form.reset({
+              siteName: 'أكاديمية القيادة الآمنة',
+              heroTitle: 'قُد بثقة.',
+              heroSubtitle: 'انضم إلى أكاديمية القيادة الآمنة للحصول على تعليمات من الخبراء، ومركبات حديثة، ونهج شخصي لمساعدتك على أن تصبح سائقًا آمنًا وواثقًا مدى الحياة.'
+           });
         }
       } catch (error) {
         console.error('Error fetching home page content:', error);
@@ -88,6 +96,7 @@ export default function HomeContentForm() {
     return (
       <div className="space-y-4">
         <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-10 w-24" />
       </div>
@@ -97,6 +106,19 @@ export default function HomeContentForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="siteName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>اسم الموقع</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="heroTitle"
