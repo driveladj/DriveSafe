@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "الرجاء إدخال بريد إلكتروني صالح." }),
+  phone: z.string().min(1, { message: "رقم الهاتف مطلوب." }),
   password: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
 });
 
@@ -29,7 +29,7 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      phone: "",
       password: "",
     },
   });
@@ -37,21 +37,26 @@ export default function LoginPage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
         try {
-            // ملاحظة: Firebase Auth تستخدم البريد الإلكتروني بشكل أساسي. سنستخدم رقم الهاتف كمعرف فريد لنا ولكن مع Firebase سنستخدم البريد الإلكتروني.
-            // للتوافق، سنقوم بتوليد بريد إلكتروني وهمي من رقم الهاتف.
-            const emailForAuth = `${values.email.replace(/[^0-9]/g, '')}@drivesafe.local`;
+            // ملاحظة: Firebase Auth تستخدم البريد الإلكتروني بشكل أساسي. 
+            // للتوافق، سنقوم بتوليد بريد إلكتروني وهمي وفريد من رقم الهاتف عند المصادقة.
+            const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
 
             await signInWithEmailAndPassword(auth, emailForAuth, values.password);
             toast({
                 title: "تم تسجيل الدخول بنجاح!",
                 description: "أهلاً بعودتك.",
             });
-            router.push("/admin"); // مؤقتًا، سنوجهه إلى لوحة تحكم المدير
+            // TODO: Reditect to the correct dashboard based on user role (admin vs trainee)
+            router.push("/admin"); 
         } catch (error: any) {
             console.error("Firebase Auth Error:", error);
+            let errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة.";
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.";
+            }
             toast({
                 title: "حدث خطأ",
-                description: "رقم الهاتف أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.",
+                description: errorMessage,
                 variant: "destructive",
             });
         } finally {
@@ -84,7 +89,7 @@ export default function LoginPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="phone"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>رقم الهاتف</FormLabel>
