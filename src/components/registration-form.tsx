@@ -33,7 +33,7 @@ const formSchema = z.object({
   dob: z.string().min(1, { message: "تاريخ الميلاد مطلوب." }),
   birthPlace: z.string().min(2, { message: "مكان الميلاد مطلوب." }),
   gender: z.enum(["male", "female", "other"], { required_error: "يرجى تحديد الجنس." }),
-  licenseType: z.string({ required_error: "يرجى تحديد نوع الرخصة." }),
+  licenseType: z.string().optional(),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "يرجى إدخال رقم هاتف صالح." }),
   password: z.string().min(8, { message: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
   confirmPassword: z.string(),
@@ -72,6 +72,7 @@ export default function RegistrationForm() {
             password: "",
             confirmPassword: "",
             acceptTerms: false,
+            licenseType: "",
         },
     });
 
@@ -154,10 +155,11 @@ export default function RegistrationForm() {
                 )} />
                 <div className="grid md:grid-cols-2 gap-8">
                     <FormField control={form.control} name="licenseType" render={({ field }) => (
-                        <FormItem><FormLabel>نوع الرخصة/الدورة</FormLabel>
+                        <FormItem><FormLabel>نوع الرخصة/الدورة (اختياري)</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                                 <SelectContent>
+                                    <SelectItem value="">لا يوجد</SelectItem>
                                     {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
