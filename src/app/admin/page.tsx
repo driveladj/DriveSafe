@@ -5,13 +5,13 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
 import type { Course } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
+import DeleteCourseAlert from '@/components/admin/delete-course-alert';
 
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
@@ -178,8 +178,7 @@ export default function AdminPage() {
                                         <TableCell className="font-medium">{course.name}</TableCell>
                                         <TableCell>{course.id}</TableCell>
                                         <TableCell className="text-left space-x-2">
-                                            <Button variant="outline" size="sm" className="ml-2"><Edit className="w-4 h-4" /></Button>
-                                            <Button variant="destructive" size="sm"><Trash2 className="w-4 h-4" /></Button>
+                                            <DeleteCourseAlert courseId={course.id} onCourseDeleted={fetchCourses} />
                                         </TableCell>
                                     </TableRow>
                                 ))}
