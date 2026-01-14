@@ -19,6 +19,7 @@ import AddFaqDialog from '@/components/admin/add-faq-dialog';
 import EditFaqDialog from '@/components/admin/edit-faq-dialog';
 import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
 import HomeContentForm from '@/components/admin/home-content-form';
+import AnnoucementsCard from '@/components/admin/announcements-card';
 
 interface Trainee {
     uid: string;
@@ -151,6 +152,10 @@ export default function AdminPage() {
                     <CardContent>
                         <HomeContentForm />
                     </CardContent>
+                </Card>
+
+                 <Card className="lg:col-span-2">
+                    <AnnoucementsCard />
                 </Card>
 
                 <Card>
