@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
+import EditTraineeDialog from '@/components/admin/edit-trainee-dialog';
 
 interface Trainee {
     uid: string;
@@ -29,6 +30,19 @@ export default function TraineesPage() {
     const [trainees, setTrainees] = useState<Trainee[]>([]);
     const [loadingTrainees, setLoadingTrainees] = useState(true);
 
+    const fetchTrainees = async () => {
+        setLoadingTrainees(true);
+        try {
+            const traineesQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+            const traineeSnapshot = await getDocs(traineesQuery);
+            setTrainees(traineeSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Trainee)));
+        } catch (error) {
+            console.error("Error fetching trainees:", error);
+        } finally {
+            setLoadingTrainees(false);
+        }
+    };
+
     useEffect(() => {
         if (!authLoading) {
             if (!user || userDetails?.role !== 'admin') {
@@ -38,19 +52,6 @@ export default function TraineesPage() {
             }
         }
     }, [user, authLoading, userDetails, router]);
-
-    const fetchTrainees = async () => {
-        setLoadingTrainees(true);
-        try {
-            const traineesQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-            const traineeSnapshot = await getDocs(traineesQuery);
-            setTrainees(traineeSnapshot.docs.map(doc => doc.data() as Trainee));
-        } catch (error) {
-            console.error("Error fetching trainees:", error);
-        } finally {
-            setLoadingTrainees(false);
-        }
-    };
 
     if (authLoading || !user || userDetails?.role !== 'admin') {
         return (
@@ -126,7 +127,7 @@ export default function TraineesPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Button variant="outline" size="sm">تعديل</Button>
+                                                <EditTraineeDialog trainee={trainee} onTraineeUpdated={fetchTrainees} />
                                             </TableCell>
                                         </TableRow>
                                     );
