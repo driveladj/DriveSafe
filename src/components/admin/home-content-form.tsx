@@ -17,13 +17,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Car, Loader2, Truck } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { ICONS, Icon } from '@/lib/icons';
 
 const formSchema = z.object({
   siteName: z.string().min(3, 'Site name is required'),
+  logoIcon: z.string().optional(),
   heroTitle: z.string().min(5, 'Title is required'),
   heroSubtitle: z.string().min(10, 'Subtitle is required'),
 });
@@ -37,6 +40,7 @@ export default function HomeContentForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       siteName: '',
+      logoIcon: 'Car',
       heroTitle: '',
       heroSubtitle: '',
     },
@@ -53,6 +57,7 @@ export default function HomeContentForm() {
         } else {
            form.reset({
               siteName: 'أكاديمية القيادة الآمنة',
+              logoIcon: 'Car',
               heroTitle: 'قُد بثقة.',
               heroSubtitle: 'انضم إلى أكاديمية القيادة الآمنة للحصول على تعليمات من الخبراء، ومركبات حديثة، ونهج شخصي لمساعدتك على أن تصبح سائقًا آمنًا وواثقًا مدى الحياة.'
            });
@@ -97,6 +102,7 @@ export default function HomeContentForm() {
       <div className="space-y-4">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-10 w-24" />
       </div>
@@ -106,19 +112,48 @@ export default function HomeContentForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="siteName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>اسم الموقع</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="siteName"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>اسم الموقع</FormLabel>
+                <FormControl>
+                    <Input {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+                control={form.control}
+                name="logoIcon"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>أيقونة الشعار</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="اختر أيقونة" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {Object.entries(ICONS).map(([name, iconData]) => (
+                                    <SelectItem key={name} value={name}>
+                                        <div className="flex items-center gap-2">
+                                            <Icon name={name as keyof typeof ICONS} className="h-5 w-5" />
+                                            <span>{iconData.label}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="heroTitle"
