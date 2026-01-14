@@ -31,7 +31,6 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import { addCourse } from '@/lib/actions';
 
 const formSchema = z.object({
-  id: z.string().min(1, 'Course ID is required').regex(/^[a-z0-9-]+$/, 'ID can only contain lowercase letters, numbers, and hyphens.'),
   name: z.string().min(3, 'Course name is required'),
   description: z.string().min(10, 'Description is required'),
   details: z.string().min(10, 'Details are required'),
@@ -45,7 +44,6 @@ export default function AddCourseDialog({ onCourseAdded }: { onCourseAdded: () =
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: '',
       name: '',
       description: '',
       details: '',
@@ -91,22 +89,6 @@ export default function AddCourseDialog({ onCourseAdded }: { onCourseAdded: () =
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>معرف الدورة (ID)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., b-license or moto-license" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    معرف فريد بالإنجليزية (حروف صغيرة، أرقام، وشرطات فقط).
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="name"

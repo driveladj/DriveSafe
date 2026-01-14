@@ -2,12 +2,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { z } from 'zod';
 
 const CourseSchema = z.object({
-  id: z.string(),
   name: z.string(),
   description: z.string(),
   details: z.string(),
@@ -20,12 +19,14 @@ export async function addCourse(data: unknown) {
     return { success: false, error: 'Invalid data provided.' };
   }
 
-  const { id, name, description, details } = result.data;
+  const { name, description, details } = result.data;
+  const newCourseRef = doc(collection(db, 'courses'));
+  const newCourseId = newCourseRef.id;
 
   try {
-    // Use the custom ID for the document
-    await setDoc(doc(db, 'courses', id), {
-      id,
+    // Use the auto-generated ID for the document
+    await setDoc(newCourseRef, {
+      id: newCourseId,
       name,
       description,
       details
