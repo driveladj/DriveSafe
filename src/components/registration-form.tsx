@@ -1,10 +1,10 @@
+
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { format } from "date-fns"
-import { CalendarIcon, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -20,9 +20,6 @@ import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
 import { courses } from "@/lib/data"
@@ -30,7 +27,7 @@ import { courses } from "@/lib/data"
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "يجب أن يتكون الاسم الأول من حرفين على الأقل." }),
   lastName: z.string().min(2, { message: "يجب أن يتكون اسم العائلة من حرفين على الأقل." }),
-  dob: z.date({ required_error: "تاريخ الميلاد مطلوب." }),
+  dob: z.string().min(1, { message: "تاريخ الميلاد مطلوب." }),
   birthPlace: z.string().min(2, { message: "مكان الميلاد مطلوب." }),
   gender: z.enum(["male", "female", "other"], { required_error: "يرجى تحديد الجنس." }),
   licenseType: z.string({ required_error: "يرجى تحديد نوع الرخصة." }),
@@ -53,6 +50,7 @@ export default function RegistrationForm() {
         defaultValues: {
             firstName: "",
             lastName: "",
+            dob: "",
             birthPlace: "",
             phone: "",
             password: "",
@@ -89,21 +87,13 @@ export default function RegistrationForm() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
                      <FormField control={form.control} name="dob" render={({ field }) => (
-                        <FormItem className="flex flex-col"><FormLabel>تاريخ الميلاد</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                                            {field.value ? format(field.value, "PPP") : <span>اختر تاريخًا</span>}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus />
-                                </PopoverContent>
-                            </Popover>
-                        <FormMessage /></FormItem>
+                        <FormItem>
+                            <FormLabel>تاريخ الميلاد</FormLabel>
+                            <FormControl>
+                                <Input placeholder="YYYY-MM-DD" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
                     )} />
                     <FormField control={form.control} name="birthPlace" render={({ field }) => (
                         <FormItem><FormLabel>مكان الميلاد</FormLabel><FormControl><Input placeholder="المدينة، البلد" {...field} /></FormControl><FormMessage /></FormItem>
@@ -161,3 +151,5 @@ export default function RegistrationForm() {
         </Form>
     );
 }
+
+    
