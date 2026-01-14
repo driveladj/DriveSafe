@@ -1,25 +1,10 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { getCourseVisuals, type Course } from "@/lib/data";
+import { type Course } from "@/lib/data";
+import { getCourses } from "@/lib/data-access";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, DocumentData } from "firebase/firestore";
-
-async function getCourses(): Promise<Course[]> {
-  const coursesCol = collection(db, 'courses');
-  const courseSnapshot = await getDocs(coursesCol);
-  const courseList = courseSnapshot.docs.map(doc => doc.data() as DocumentData);
-  
-  return courseList.map(course => {
-    const visuals = getCourseVisuals(course.id);
-    return {
-      ...course,
-      ...visuals,
-    } as Course;
-  });
-}
 
 export default async function CoursesPage() {
 
@@ -68,6 +53,11 @@ export default async function CoursesPage() {
                 </div>
               </div>
             ))}
+             {courses.length === 0 && (
+                <div className="text-center py-12">
+                    <p className="text-muted-foreground">لم يتم العثور على دورات. سيقوم المدير بإضافتها قريباً.</p>
+                </div>
+             )}
           </div>
         </div>
       </section>

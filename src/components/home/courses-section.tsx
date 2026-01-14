@@ -3,28 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getCourseVisuals, type Course } from "@/lib/data";
+import { getCourses } from "@/lib/data-access";
+import { type Course } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, DocumentData, limit, query } from "firebase/firestore";
-
-async function getCourses(): Promise<Course[]> {
-  const coursesCol = query(collection(db, 'courses'), limit(3));
-  const courseSnapshot = await getDocs(coursesCol);
-  const courseList = courseSnapshot.docs.map(doc => doc.data() as DocumentData);
-  
-  return courseList.map(course => {
-    const visuals = getCourseVisuals(course.id);
-    return {
-      ...course,
-      ...visuals,
-    } as Course;
-  });
-}
-
 
 export default async function CoursesSection() {
-  const courses = await getCourses();
+  const courses = await getCourses(3);
 
   return (
     <section className="py-16 sm:py-24 bg-secondary">
@@ -72,6 +56,11 @@ export default async function CoursesSection() {
             </Card>
           ))}
         </div>
+        {courses.length === 0 && (
+            <div className="text-center py-12 bg-card rounded-lg">
+                <p className="text-muted-foreground">سيتم عرض الدورات هنا قريباً.</p>
+            </div>
+        )}
       </div>
     </section>
   );
