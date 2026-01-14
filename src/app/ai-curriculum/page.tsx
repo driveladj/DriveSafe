@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,8 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from '@/components/ui/separator';
 
 export default function AiCurriculumPage() {
-    const [studentProgress, setStudentProgress] = useState('Student shows good vehicle control but struggles with judging distances for parking and has anxiety in heavy traffic.');
-    const [availableResources, setAvailableResources] = useState('Lesson plans: Parallel Parking, 3-Point Turns, Highway Driving, Defensive Driving Techniques. Exercises: Cone weaving, Emergency braking, Roundabout navigation.');
+    const [studentProgress, setStudentProgress] = useState('الطالب يظهر تحكمًا جيدًا في السيارة ولكنه يواجه صعوبة في تقدير المسافات لركن السيارة ولديه قلق في حركة المرور الكثيفة.');
+    const [availableResources, setAvailableResources] = useState('خطط الدروس: الركن الموازي، الدوران ثلاثي النقاط، القيادة على الطرق السريعة، تقنيات القيادة الدفاعية. التمارين: التعرج بين الأقماع، الكبح في حالات الطوارئ، الملاحة في الدوارات.');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<AICurriculumRecommendationOutput | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,7 @@ export default function AiCurriculumPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!studentProgress || !availableResources) {
-            setError("Please fill in both fields.");
+            setError("يرجى ملء كلا الحقلين.");
             return;
         }
         setLoading(true);
@@ -31,7 +32,7 @@ export default function AiCurriculumPage() {
             const output = await aiCurriculumRecommendation({ studentProgress, availableResources });
             setResult(output);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+            setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف.');
         } finally {
             setLoading(false);
         }
@@ -41,9 +42,9 @@ export default function AiCurriculumPage() {
         <>
             <section className="py-16 sm:py-24 bg-secondary">
                 <div className="container text-center">
-                    <h1 className="font-headline text-4xl md:text-5xl font-bold">AI Curriculum Generator</h1>
+                    <h1 className="font-headline text-4xl md:text-5xl font-bold">مولد المناهج بالذكاء الاصطناعي</h1>
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                        Leverage AI to create personalized learning plans. Input student progress and available resources to get a tailored curriculum recommendation.
+                        استفد من الذكاء الاصطناعي لإنشاء خطط تعلم مخصصة. أدخل تقدم الطالب والموارد المتاحة للحصول على توصية منهجية مخصصة.
                     </p>
                 </div>
             </section>
@@ -53,26 +54,26 @@ export default function AiCurriculumPage() {
                     <div className="grid md:grid-cols-2 gap-12">
                         <Card className="h-fit">
                             <CardHeader>
-                                <CardTitle>Instructor Input</CardTitle>
-                                <CardDescription>Provide the AI with context about the student.</CardDescription>
+                                <CardTitle>مدخلات المدرب</CardTitle>
+                                <CardDescription>زود الذكاء الاصطناعي بسياق حول الطالب.</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="student-progress">Student Progress Summary</Label>
+                                        <Label htmlFor="student-progress">ملخص تقدم الطالب</Label>
                                         <Textarea
                                             id="student-progress"
-                                            placeholder="e.g., Confident with basics, struggles with parallel parking..."
+                                            placeholder="مثال: واثق من الأساسيات، يواجه صعوبة في الركن الموازي..."
                                             value={studentProgress}
                                             onChange={(e) => setStudentProgress(e.target.value)}
                                             rows={5}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="available-resources">Available Resources</Label>
+                                        <Label htmlFor="available-resources">الموارد المتاحة</Label>
                                         <Textarea
                                             id="available-resources"
-                                            placeholder="e.g., Lesson plans for highway driving, parking drills..."
+                                            placeholder="مثال: خطط دروس للقيادة على الطرق السريعة، تدريبات الركن..."
                                             value={availableResources}
                                             onChange={(e) => setAvailableResources(e.target.value)}
                                             rows={5}
@@ -80,9 +81,9 @@ export default function AiCurriculumPage() {
                                     </div>
                                     <Button type="submit" className="w-full" disabled={loading}>
                                         {loading ? (
-                                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> جارٍ التوليد...</>
                                         ) : (
-                                            <><Sparkles className="mr-2 h-4 w-4" /> Generate Curriculum</>
+                                            <><Sparkles className="mr-2 h-4 w-4" /> توليد المنهج</>
                                         )}
                                     </Button>
                                 </form>
@@ -90,12 +91,12 @@ export default function AiCurriculumPage() {
                         </Card>
 
                         <div className="space-y-6">
-                            <h2 className="font-headline text-3xl font-bold">AI Recommendation</h2>
+                            <h2 className="font-headline text-3xl font-bold">توصية الذكاء الاصطناعي</h2>
                             {loading && (
                                 <Card className="flex items-center justify-center p-12">
                                     <div className="text-center text-muted-foreground space-y-4">
                                         <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
-                                        <p>Our AI is crafting the perfect lesson plan...</p>
+                                        <p>يقوم الذكاء الاصطناعي بصياغة خطة الدرس المثالية...</p>
                                     </div>
                                 </Card>
                             )}
@@ -103,7 +104,7 @@ export default function AiCurriculumPage() {
                             {error && (
                                 <Alert variant="destructive">
                                     <AlertCircle className="h-4 w-4" />
-                                    <AlertTitle>Error</AlertTitle>
+                                    <AlertTitle>خطأ</AlertTitle>
                                     <AlertDescription>{error}</AlertDescription>
                                 </Alert>
                             )}
@@ -111,23 +112,23 @@ export default function AiCurriculumPage() {
                             {result ? (
                                 <Card className="bg-primary/5">
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent"/> Recommended Curriculum</CardTitle>
+                                        <CardTitle className="flex items-center gap-2"><Sparkles className="text-accent"/> المنهج الموصى به</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <pre className="whitespace-pre-wrap font-body text-sm bg-background p-4 rounded-md">{result.recommendedCurriculum}</pre>
                                         <Separator/>
-                                        <h3 className="font-bold font-headline">Explanation</h3>
+                                        <h3 className="font-bold font-headline">الشرح</h3>
                                         <p className="text-muted-foreground text-sm">{result.explanation}</p>
                                     </CardContent>
                                     <CardFooter className="flex gap-2">
-                                        <Button>Activate Plan</Button>
-                                        <Button variant="outline">Send to Student</Button>
+                                        <Button>تفعيل الخطة</Button>
+                                        <Button variant="outline">إرسال إلى الطالب</Button>
                                     </CardFooter>
                                 </Card>
                             ) : (
                                 !loading && <Card className="flex items-center justify-center p-12 border-dashed">
                                     <div className="text-center text-muted-foreground">
-                                        <p>Your generated curriculum will appear here.</p>
+                                        <p>سيظهر المنهج الذي تم إنشاؤه هنا.</p>
                                     </div>
                                 </Card>
                             )}
