@@ -3,12 +3,12 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { type Testimonial } from "@/lib/data";
-import { Smile, Star, Users, HeartHandshake, Loader2, LucideProps } from "lucide-react";
+import { Smile, Star, Users, HeartHandshake, Loader2, LucideProps, ForwardRefExoticComponent } from "lucide-react";
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const avatarIcons: { [key: string]: React.FC<LucideProps> } = {
+const avatarIcons: { [key: string]: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>> } = {
     'Smile': Smile,
     'Users': Users,
     'HeartHandshake': HeartHandshake,
@@ -19,20 +19,19 @@ export default function TestimonialsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTestimonials() {
-        setLoading(true);
-        try {
-            const testimonialsCol = query(collection(db, 'testimonials'), orderBy('name'));
-            const snapshot = await getDocs(testimonialsCol);
-            const fetchedTestimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial));
-            setTestimonials(fetchedTestimonials);
-        } catch (error) {
-            console.error("Error fetching testimonials:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchTestimonials();
+    setLoading(true);
+    const testimonialsCol = query(collection(db, 'testimonials'), orderBy('name'));
+    
+    const unsubscribe = onSnapshot(testimonialsCol, (snapshot) => {
+        const fetchedTestimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial));
+        setTestimonials(fetchedTestimonials);
+        setLoading(false);
+    }, (error) => {
+        console.error("Error fetching testimonials:", error);
+        setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -86,5 +85,3 @@ export default function TestimonialsSection() {
     </section>
   );
 }
-
-    
