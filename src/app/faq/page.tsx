@@ -6,11 +6,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { Loader2 } from 'lucide-react';
-
-type FAQ = {
-  q: string;
-  a: string;
-};
+import type { FAQ } from '@/lib/data';
 
 export default function FAQPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
@@ -21,7 +17,7 @@ export default function FAQPage() {
       setLoading(true);
       const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
       const faqSnapshot = await getDocs(faqsCol);
-      setFaqs(faqSnapshot.docs.map(doc => doc.data() as FAQ));
+      setFaqs(faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQ)));
       setLoading(false);
     }
     getFaqs();
@@ -47,7 +43,7 @@ export default function FAQPage() {
           ) : (
             <Accordion type="single" collapsible className="w-full space-y-4">
                 {faqs.map((faq, index) => (
-                    <AccordionItem key={index} value={`item-${index}`} className="bg-card rounded-lg border px-4">
+                    <AccordionItem key={faq.id} value={`item-${index}`} className="bg-card rounded-lg border px-4">
                         <AccordionTrigger className="text-right font-semibold text-lg hover:no-underline">{faq.q}</AccordionTrigger>
                         <AccordionContent className="text-muted-foreground text-base">
                             {faq.a}

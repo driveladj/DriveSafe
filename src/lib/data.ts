@@ -48,6 +48,14 @@ export type Course = {
     } | undefined;
 }
 
+export type FAQ = {
+  id: string;
+  q: string;
+  a: string;
+  order: number;
+};
+
+
 const courseIcons: {[key: string]: LucideIcon} = {
     'b-license': Car,
     'moto-license': Bike,

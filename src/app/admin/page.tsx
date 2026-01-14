@@ -5,26 +5,41 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
-import type { Course } from "@/lib/data";
+import type { Course, FAQ } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
 import DeleteCourseAlert from '@/components/admin/delete-course-alert';
 import EditCourseDialog from '@/components/admin/edit-course-dialog';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import AddFaqDialog from '@/components/admin/add-faq-dialog';
+import EditFaqDialog from '@/components/admin/edit-faq-dialog';
+import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
 
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [faqs, setFaqs] = useState<FAQ[]>([]);
+    const [loadingCourses, setLoadingCourses] = useState(true);
+    const [loadingFaqs, setLoadingFaqs] = useState(true);
 
     const fetchCourses = async () => {
-        setLoading(true);
+        setLoadingCourses(true);
         const fetchedCourses = await getCourses(10);
         setCourses(fetchedCourses);
-        setLoading(false);
+        setLoadingCourses(false);
+    };
+
+    const fetchFaqs = async () => {
+      setLoadingFaqs(true);
+      const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
+      const faqSnapshot = await getDocs(faqsCol);
+      setFaqs(faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQ)));
+      setLoadingFaqs(false);
     };
 
     useEffect(() => {
@@ -33,6 +48,7 @@ export default function AdminPage() {
                 router.push('/login');
             } else {
                 fetchCourses();
+                fetchFaqs();
             }
         }
     }, [user, authLoading, userDetails, router]);
@@ -86,7 +102,6 @@ export default function AdminPage() {
                 <h1 className="text-3xl font-bold tracking-tight">لوحة تحكم المدير</h1>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, index) => (
                     <Card key={index}>
@@ -103,8 +118,97 @@ export default function AdminPage() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2">
-                {/* Recent Registrations Table */}
                 <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>إدارة الدورات</CardTitle>
+                            <CardDescription>إضافة وتعديل وحذف الدورات التدريبية.</CardDescription>
+                        </div>
+                        <AddCourseDialog onCourseAdded={fetchCourses} />
+                    </CardHeader>
+                    <CardContent>
+                       {loadingCourses ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>اسم الدورة</TableHead>
+                                    <TableHead>ID</TableHead>
+                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {courses.map((course) => (
+                                    <TableRow key={course.id}>
+                                        <TableCell className="font-medium">{course.name}</TableCell>
+                                        <TableCell>{course.id}</TableCell>
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditCourseDialog course={course} onCourseUpdated={fetchCourses} />
+                                            <DeleteCourseAlert courseId={course.id} onCourseDeleted={fetchCourses} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {courses.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="text-center">
+                                            لم يتم العثور على دورات. قم بإضافة دورة جديدة.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                        )}
+                    </CardContent>
+                </Card>
+
+                 <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>إدارة الأسئلة الشائعة</CardTitle>
+                            <CardDescription>إضافة وتعديل وحذف الأسئلة والأجوبة.</CardDescription>
+                        </div>
+                        <AddFaqDialog onFaqAdded={fetchFaqs} />
+                    </CardHeader>
+                    <CardContent>
+                       {loadingFaqs ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>السؤال</TableHead>
+                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {faqs.map((faq) => (
+                                    <TableRow key={faq.id}>
+                                        <TableCell className="font-medium truncate max-w-[200px]">{faq.q}</TableCell>
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditFaqDialog faq={faq} onFaqUpdated={fetchFaqs} />
+                                            <DeleteFaqAlert faqId={faq.id} onFaqDeleted={fetchFaqs} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {faqs.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={2} className="text-center">
+                                            لم يتم العثور على أسئلة شائعة.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className="md:col-span-2">
                     <CardHeader>
                         <CardTitle>التسجيلات الأخيرة</CardTitle>
                         <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
@@ -147,53 +251,6 @@ export default function AdminPage() {
                                 ))}
                             </TableBody>
                         </Table>
-                    </CardContent>
-                </Card>
-
-                {/* Courses Management Table */}
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle>إدارة الدورات</CardTitle>
-                            <CardDescription>إضافة وتعديل وحذف الدورات التدريبية.</CardDescription>
-                        </div>
-                        <AddCourseDialog onCourseAdded={fetchCourses} />
-                    </CardHeader>
-                    <CardContent>
-                       {loading ? (
-                            <div className="flex justify-center items-center py-12">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                        ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>اسم الدورة</TableHead>
-                                    <TableHead>ID</TableHead>
-                                    <TableHead className="text-left">الإجراءات</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {courses.map((course) => (
-                                    <TableRow key={course.id}>
-                                        <TableCell className="font-medium">{course.name}</TableCell>
-                                        <TableCell>{course.id}</TableCell>
-                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
-                                            <EditCourseDialog course={course} onCourseUpdated={fetchCourses} />
-                                            <DeleteCourseAlert courseId={course.id} onCourseDeleted={fetchCourses} />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {courses.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-center">
-                                            لم يتم العثور على دورات. قم بإضافة دورة جديدة.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                        )}
                     </CardContent>
                 </Card>
             </div>
