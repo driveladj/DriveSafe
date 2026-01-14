@@ -22,7 +22,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { ICONS, Icon } from '@/lib/icons';
+import { ICONS, Icon } from '@/lib/icons.tsx';
 
 const formSchema = z.object({
   siteName: z.string().min(3, 'Site name is required'),

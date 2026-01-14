@@ -16,7 +16,7 @@ interface IconProps extends LucideProps {
   name: IconName;
 }
 
-export const Icon = ({ name, ...props }: IconProps) => {
-  const IconComponent = ICONS[name] ? ICONS[name].component : Car; // Fallback to Car
+export function Icon({ name, ...props }: IconProps) {
+  const IconComponent = ICONS[name] ? ICONS[name].component : Car;
   return <IconComponent {...props} />;
-};
+}

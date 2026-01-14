@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Icon, ICONS } from "@/lib/icons";
+import { Icon, ICONS } from "@/lib/icons.tsx";
 
 export default function Logo({ className }: { className?: string }) {
   const [siteName, setSiteName] = useState('أكاديمية القيادة...');
