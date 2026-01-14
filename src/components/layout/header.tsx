@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -70,11 +71,11 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild className="hidden md:flex" variant="outline">
+          <Button asChild className="hidden md:flex">
             <Link href="/register">التسجيل</Link>
           </Button>
           <Button asChild>
-            <Link href="/register">تسجيل الدخول</Link>
+            <Link href="/login">تسجيل الدخول</Link>
           </Button>
         </div>
       </div>

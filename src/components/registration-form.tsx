@@ -5,6 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -43,6 +47,7 @@ const formSchema = z.object({
 
 export default function RegistrationForm() {
     const { toast } = useToast()
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -59,19 +64,50 @@ export default function RegistrationForm() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
-        console.log(values)
+        
+        // ملاحظة: Firebase Auth يتطلب بريدًا إلكترونيًا فريدًا.
+        // سننشئ بريدًا إلكترونيًا وهميًا باستخدام رقم الهاتف لضمان التفرد.
+        const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false)
+        try {
+            // 1. إنشاء المستخدم في Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, emailForAuth, values.password);
+            const user = userCredential.user;
+
+            // 2. تخزين بيانات المستخدم الإضافية في Firestore
+            const { password, confirmPassword, acceptTerms, ...userData } = values;
+            await setDoc(doc(db, "users", user.uid), {
+                ...userData,
+                uid: user.uid,
+                email: emailForAuth, // حفظ البريد الإلكتروني الوهمي كمرجع
+                role: "trainee", // تعيين دور افتراضي
+                createdAt: new Date(),
+            });
+
             toast({
                 title: "تم التسجيل بنجاح!",
-                description: "مرحبًا بك في أكاديمية القيادة الآمنة. سنتواصل معك قريبًا.",
+                description: "مرحبًا بك في أكاديمية القيادة الآمنة. يتم توجيهك الآن...",
             })
-            form.reset()
-        }, 2000)
+            
+            // 3. توجيه المستخدم إلى لوحة التحكم
+            router.push("/admin"); // مؤقتًا إلى لوحة تحكم المدير
+
+        } catch (error: any) {
+            console.error("Registration Error:", error)
+            let errorMessage = "حدث خطأ غير متوقع أثناء التسجيل.";
+            if (error.code === "auth/email-already-in-use") {
+                errorMessage = "هذا الرقم مسجل بالفعل. حاول تسجيل الدخول.";
+            }
+            toast({
+                title: "فشل التسجيل",
+                description: errorMessage,
+                variant: "destructive",
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -122,7 +158,7 @@ export default function RegistrationForm() {
                         <FormMessage /></FormItem>
                     )} />
                      <FormField control={form.control} name="phone" render={({ field }) => (
-                        <FormItem><FormLabel>رقم الهاتف (لتسجيل الدخول)</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>رقم الهاتف (لتسجيل الدخول)</FormLabel><FormControl><Input placeholder="+966501234567" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
                  <div className="grid md:grid-cols-2 gap-8">
@@ -151,5 +187,3 @@ export default function RegistrationForm() {
         </Form>
     );
 }
-
-    
