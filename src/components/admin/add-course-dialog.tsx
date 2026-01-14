@@ -28,7 +28,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, PlusCircle } from 'lucide-react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { revalidatePath } from 'next/cache';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Course name is required'),
