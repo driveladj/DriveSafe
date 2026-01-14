@@ -1,14 +1,27 @@
+'use client';
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { type Course } from "@/lib/data";
 import { getCourses } from "@/lib/data-access";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default async function CoursesPage() {
+export default function CoursesPage() {
 
-  const courses = await getCourses();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      const fetchedCourses = await getCourses();
+      setCourses(fetchedCourses);
+      setLoading(false);
+    }
+    fetchCourses();
+  }, []);
 
   return (
     <>
@@ -24,7 +37,11 @@ export default async function CoursesPage() {
       <section className="py-16 sm:py-24">
         <div className="container">
           <div className="space-y-12">
-            {courses.map((course, index) => (
+            {loading ? (
+                <div className="flex justify-center items-center py-12">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                </div>
+            ) : courses.map((course, index) => (
               <div key={course.id} id={course.id} className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <div className={`relative h-80 rounded-lg overflow-hidden ${index % 2 !== 0 ? 'md:order-last' : ''}`}>
                   {course.image && (
@@ -53,7 +70,7 @@ export default async function CoursesPage() {
                 </div>
               </div>
             ))}
-             {courses.length === 0 && (
+             {!loading && courses.length === 0 && (
                 <div className="text-center py-12">
                     <p className="text-muted-foreground">لم يتم العثور على دورات. سيقوم المدير بإضافتها قريباً.</p>
                 </div>

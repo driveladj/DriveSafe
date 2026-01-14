@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -6,30 +8,34 @@ import { MoveLeft } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditableText } from "../editable-text";
+import { useEffect, useState } from "react";
 
 type HeroContent = {
   heroTitle: string;
   heroSubtitle: string;
 };
 
-async function getHeroContent(): Promise<HeroContent> {
-  const docRef = doc(db, "pages", "home");
-  const docSnap = await getDoc(docRef);
+const defaultContent: HeroContent = {
+  heroTitle: "قُد بثقة.",
+  heroSubtitle: "انضم إلى أكاديمية القيادة الآمنة للحصول على تعليمات من الخبراء، ومركبات حديثة، ونهج شخصي لمساعدتك على أن تصبح سائقًا آمنًا وواثقًا مدى الحياة."
+};
 
-  if (docSnap.exists()) {
-    return docSnap.data() as HeroContent;
-  } else {
-    // Return default content if document doesn't exist
-    return {
-      heroTitle: "قُد بثقة.",
-      heroSubtitle: "انضم إلى أكاديمية القيادة الآمنة للحصول على تعليمات من الخبراء، ومركبات حديثة، ونهج شخصي لمساعدتك على أن تصبح سائقًا آمنًا وواثقًا مدى الحياة."
-    };
-  }
-}
 
-export default async function HeroSection() {
+export default function HeroSection() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-1');
-  const content = await getHeroContent();
+  const [content, setContent] = useState<HeroContent>(defaultContent);
+
+  useEffect(() => {
+    async function getHeroContent() {
+      const docRef = doc(db, "pages", "home");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setContent(docSnap.data() as HeroContent);
+      }
+    }
+    getHeroContent();
+  }, []);
 
   return (
     <section className="relative w-full h-[60vh] md:h-[80vh] bg-secondary group/hero">
