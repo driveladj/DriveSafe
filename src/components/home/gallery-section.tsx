@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function GallerySection() {
     const galleryImages = [
@@ -16,9 +16,9 @@ export default function GallerySection() {
         <section className="py-16 sm:py-24 bg-background">
             <div className="container">
                 <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl md:text-4xl font-bold">A Glimpse Into Our Academy</h2>
+                    <h2 className="font-headline text-3xl md:text-4xl font-bold">لمحة عن أكاديميتنا</h2>
                     <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                        See our modern facilities, vehicles, and happy students in action.
+                        شاهد منشآتنا الحديثة ومركباتنا وطلابنا السعداء أثناء العمل.
                     </p>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -37,7 +37,7 @@ export default function GallerySection() {
                 </div>
                  <div className="text-center mt-12">
                     <Button asChild size="lg">
-                        <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2"/></Link>
+                        <Link href="/gallery">عرض المعرض بالكامل <ArrowLeft className="mr-2"/></Link>
                     </Button>
                 </div>
             </div>
