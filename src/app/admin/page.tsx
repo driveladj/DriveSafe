@@ -18,6 +18,7 @@ import { db } from '@/lib/firebase';
 import AddFaqDialog from '@/components/admin/add-faq-dialog';
 import EditFaqDialog from '@/components/admin/edit-faq-dialog';
 import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
+import HomeContentForm from '@/components/admin/home-content-form';
 
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
@@ -117,7 +118,17 @@ export default function AdminPage() {
                 ))}
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
+                 <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <CardTitle>محتوى الصفحة الرئيسية</CardTitle>
+                        <CardDescription>تعديل النصوص الرئيسية في صفحة الهبوط.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <HomeContentForm />
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
@@ -208,7 +219,7 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="md:col-span-2">
+                <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle>التسجيلات الأخيرة</CardTitle>
                         <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
