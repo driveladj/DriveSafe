@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -28,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import AddTestimonialDialog from '@/components/admin/add-testimonial-dialog';
 import EditTestimonialDialog from '@/components/admin/edit-testimonial-dialog';
 import DeleteTestimonialAlert from '@/components/admin/delete-testimonial-alert';
+import PendingTestimonialsCard from '@/components/admin/pending-testimonials-card';
 
 
 interface Trainee {
@@ -341,10 +343,14 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
 
+                 <Card className="lg:col-span-2">
+                    <PendingTestimonialsCard onTestimonialApproved={fetchTestimonials} />
+                </Card>
+
                 <Card className="lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle>إدارة آراء الطلاب</CardTitle>
+                            <CardTitle>إدارة آراء الطلاب (المنشورة)</CardTitle>
                             <CardDescription>إضافة وتعديل وحذف آراء الطلاب المعروضة في الصفحة الرئيسية.</CardDescription>
                         </div>
                         <AddTestimonialDialog onTestimonialAdded={fetchTestimonials} />
@@ -379,7 +385,7 @@ export default function AdminPage() {
                                 {testimonials.length === 0 && (
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-center">
-                                            لم يتم العثور على آراء.
+                                            لم يتم العثور على آراء منشورة.
                                         </TableCell>
                                     </TableRow>
                                 )}

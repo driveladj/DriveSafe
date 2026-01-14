@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useAuth } from "@/hooks/use-auth.tsx";
@@ -6,11 +7,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Loader2 } from "lucide-react";
+import { Bell, Loader2, Edit } from "lucide-react";
 import { collection, getDocs, orderBy, query, limit, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import Link from 'next/link';
 
 interface Announcement {
     id: string;
@@ -91,7 +93,7 @@ export default function DashboardPage() {
                     </CardContent>
                 </Card>
                 
-                <Card>
+                <Card className="lg:col-span-3">
                     <CardHeader>
                         <CardTitle>الإشعارات</CardTitle>
                         <CardDescription>آخر التحديثات من الأكاديمية.</CardDescription>
@@ -118,6 +120,22 @@ export default function DashboardPage() {
                          ) : (
                             <p className="text-muted-foreground text-sm">لا توجد إشعارات جديدة.</p>
                          )}
+                    </CardContent>
+                </Card>
+
+                 <Card className="lg:col-span-3">
+                    <CardHeader>
+                        <CardTitle>شاركنا تجربتك</CardTitle>
+                        <CardDescription>
+                            رأيك يهمنا ويساعد الطلاب الآخرين. هل ترغب في ترك رأي حول تجربتك في الأكاديمية؟
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button asChild>
+                            <Link href="/submit-testimonial">
+                                <Edit className="w-4 h-4 mr-2"/> كتابة رأي
+                            </Link>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
