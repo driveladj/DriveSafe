@@ -2,8 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Menu, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,28 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from './logo';
 import { cn } from '@/lib/utils';
 import { navItems } from '@/lib/data';
+import { useAuth } from '@/hooks/use-auth.tsx';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 export default function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, userDetails, signOutUser, loading } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOutUser();
+    router.push('/');
+  };
 
   const NavLink = ({ href, label }: { href: string; label: string }) => (
     <Link
@@ -28,6 +46,12 @@ export default function SiteHeader() {
       {label}
     </Link>
   );
+
+  const getInitials = (firstName = '', lastName = '') => {
+      const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+      const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+      return `${firstInitial}${lastInitial}`;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -52,9 +76,16 @@ export default function SiteHeader() {
                   ))}
                 </nav>
                 <div className="p-4 border-t">
-                   <Button asChild className="w-full" size="lg">
+                  {user ? (
+                      <Button onClick={handleSignOut} className="w-full" size="lg" variant="secondary">
+                        <LogOut className="ml-2 h-4 w-4" />
+                        تسجيل الخروج
+                      </Button>
+                  ) : (
+                    <Button asChild className="w-full" size="lg">
                       <Link href="/register">سجل الآن</Link>
                     </Button>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -71,12 +102,50 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild className="hidden md:flex">
-            <Link href="/register">التسجيل</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/login">تسجيل الدخول</Link>
-          </Button>
+          {!loading && (
+            user && userDetails ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-9 w-9">
+                       <AvatarFallback>{getInitials(userDetails.firstName, userDetails.lastName)}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{userDetails.firstName} {userDetails.lastName}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {userDetails.role === 'admin' ? 'مدير' : 'متدرب'}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={userDetails.role === 'admin' ? '/admin' : '/dashboard'}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>لوحة التحكم</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>تسجيل الخروج</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button asChild className="hidden md:flex">
+                  <Link href="/register">التسجيل</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/login">تسجيل الدخول</Link>
+                </Button>
+              </>
+            )
+          )}
         </div>
       </div>
     </header>
