@@ -158,7 +158,7 @@ export default function RegistrationForm() {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                                 <SelectContent>
-                                    <SelectItem value="">لا يوجد</SelectItem>
+                                    <SelectItem value="no-course">لا يوجد</SelectItem>
                                     {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
