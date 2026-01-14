@@ -9,6 +9,7 @@ import { MoveLeft } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 type HeroContent = {
   heroTitle: string;
@@ -33,7 +34,11 @@ export default function HeroSection() {
       try {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setContent(docSnap.data() as HeroContent);
+          const data = docSnap.data();
+          setContent({
+            heroTitle: data.heroTitle || defaultContent.heroTitle,
+            heroSubtitle: data.heroSubtitle || defaultContent.heroSubtitle
+          });
         }
       } catch (error) {
         console.error("Failed to fetch hero content:", error);
@@ -60,8 +65,8 @@ export default function HeroSection() {
       <div className="relative container h-full flex flex-col items-center justify-center text-center text-primary-foreground">
        {loading ? (
           <>
-            <div className="bg-primary/20 h-14 w-3/4 rounded-md animate-pulse mb-4" />
-            <div className="bg-primary/20 h-8 w-1/2 rounded-md animate-pulse" />
+            <Skeleton className="h-14 w-3/4 max-w-2xl rounded-md mb-4" />
+            <Skeleton className="h-16 w-full max-w-xl rounded-md" />
           </>
         ) : (
           <>
