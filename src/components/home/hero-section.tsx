@@ -7,7 +7,6 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { MoveLeft } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { EditableText } from "../editable-text";
 import { useEffect, useState } from "react";
 
 type HeroContent = {
@@ -28,10 +27,13 @@ export default function HeroSection() {
   useEffect(() => {
     async function getHeroContent() {
       const docRef = doc(db, "pages", "home");
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setContent(docSnap.data() as HeroContent);
+      try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setContent(docSnap.data() as HeroContent);
+        }
+      } catch (error) {
+        console.error("Failed to fetch hero content:", error);
       }
     }
     getHeroContent();
@@ -52,21 +54,10 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-primary/60" />
       <div className="relative container h-full flex flex-col items-center justify-center text-center text-primary-foreground">
         <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold !leading-tight tracking-tighter">
-          <EditableText
-            collection="pages"
-            docId="home"
-            field="heroTitle"
-            initialValue={content.heroTitle}
-          />
+          {content.heroTitle}
         </h1>
         <p className="max-w-2xl mt-4 text-lg md:text-xl text-primary-foreground/80">
-           <EditableText
-            collection="pages"
-            docId="home"
-            field="heroSubtitle"
-            initialValue={content.heroSubtitle}
-            as="textarea"
-          />
+           {content.heroSubtitle}
         </p>
         <div className="mt-8 flex gap-4">
           <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">

@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import SiteHeader from '@/components/layout/header';
 import SiteFooter from '@/components/layout/footer';
 import { AuthProvider } from '@/hooks/use-auth.tsx';
-import { EditModeProvider } from '@/hooks/use-edit-mode';
 
 export const metadata: Metadata = {
   title: 'أكاديمية القيادة الآمنة',
@@ -27,14 +26,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          <EditModeProvider>
             <div className="relative flex min-h-screen flex-col bg-background">
                 <SiteHeader />
                 <main className="flex-1">{children}</main>
                 <SiteFooter />
             </div>
             <Toaster />
-          </EditModeProvider>
         </AuthProvider>
       </body>
     </html>
