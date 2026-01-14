@@ -2,10 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star, ArrowLeft } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
 import type { Course, FAQ, PricingTier } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
@@ -13,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
 import DeleteCourseAlert from '@/components/admin/delete-course-alert';
 import EditCourseDialog from '@/components/admin/edit-course-dialog';
-import { collection, getDocs, orderBy, query, limit, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, limit, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import AddFaqDialog from '@/components/admin/add-faq-dialog';
 import EditFaqDialog from '@/components/admin/edit-faq-dialog';
@@ -23,6 +24,7 @@ import AnnoucementsCard from '@/components/admin/announcements-card';
 import AddPriceDialog from '@/components/admin/add-price-dialog';
 import EditPriceDialog from '@/components/admin/edit-price-dialog';
 import DeletePriceAlert from '@/components/admin/delete-price-alert';
+import { Button } from '@/components/ui/button';
 
 
 interface Trainee {
@@ -42,6 +44,7 @@ export default function AdminPage() {
     const [faqs, setFaqs] = useState<FAQ[]>([]);
     const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
     const [recentTrainees, setRecentTrainees] = useState<Trainee[]>([]);
+    const [traineeCount, setTraineeCount] = useState<number | string>('...');
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingFaqs, setLoadingFaqs] = useState(true);
     const [loadingTrainees, setLoadingTrainees] = useState(true);
@@ -73,14 +76,23 @@ export default function AdminPage() {
 
     const fetchRecentTrainees = async () => {
         setLoadingTrainees(true);
-        const traineesCol = query(
-            collection(db, 'users'), 
-            orderBy('createdAt', 'desc'), 
-            limit(5)
-        );
-        const traineeSnapshot = await getDocs(traineesCol);
-        setRecentTrainees(traineeSnapshot.docs.map(doc => doc.data() as Trainee));
-        setLoadingTrainees(false);
+        try {
+            const traineesQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+            
+            // Get total count
+            const countSnapshot = await getCountFromServer(traineesQuery);
+            setTraineeCount(countSnapshot.data().count);
+            
+            // Get recent 5
+            const recentTraineesQuery = query(traineesQuery, limit(5));
+            const traineeSnapshot = await getDocs(recentTraineesQuery);
+            setRecentTrainees(traineeSnapshot.docs.map(doc => doc.data() as Trainee));
+        } catch (error) {
+            console.error("Error fetching trainee data:", error);
+            setTraineeCount(0);
+        } finally {
+            setLoadingTrainees(false);
+        }
     };
 
 
@@ -100,12 +112,12 @@ export default function AdminPage() {
     const stats = [
         {
             title: "إجمالي الطلاب",
-            value: "1,250",
+            value: traineeCount,
             icon: Users,
-            change: "+15.2% عن الشهر الماضي",
+            change: "كل التسجيلات",
         },
         {
-            title: "الإيرادات",
+            title: "الإيرادات (تقديري)",
             value: "75,345 دج",
             icon: DollarSign,
             change: "+20.1% عن الشهر الماضي",
@@ -316,9 +328,17 @@ export default function AdminPage() {
                 </Card>
 
                 <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>التسجيلات الأخيرة</CardTitle>
-                        <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>التسجيلات الأخيرة</CardTitle>
+                            <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
+                        </div>
+                        <Button asChild variant="outline" size="sm">
+                            <Link href="/admin/trainees">
+                                عرض الكل
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                            </Link>
+                        </Button>
                     </CardHeader>
                     <CardContent>
                        {loadingTrainees ? (
