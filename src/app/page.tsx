@@ -3,11 +3,13 @@ import FeaturesSection from '@/components/home/features-section';
 import CoursesSection from '@/components/home/courses-section';
 import TestimonialsSection from '@/components/home/testimonials-section';
 import CtaSection from '@/components/home/cta-section';
-import GallerySection from '@/components/home/gallery-section';
+import GallerySection from '@/app/home/gallery-section';
+import AnnouncementBar from '@/components/layout/announcement-bar';
 
 export default function Home() {
   return (
     <div className="flex flex-col">
+      <AnnouncementBar />
       <HeroSection />
       <FeaturesSection />
       <CoursesSection />
