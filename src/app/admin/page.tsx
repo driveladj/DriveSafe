@@ -80,7 +80,7 @@ export default function AdminPage() {
             const traineesQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
             
             // Get total count
-            const countSnapshot = await getCountFromServer(traineesQuery);
+            const countSnapshot = await getCountFromServer(collection(db, 'users'));
             setTraineeCount(countSnapshot.data().count);
             
             // Get recent 5
@@ -399,4 +399,5 @@ export default function AdminPage() {
             </div>
         </div>
     );
-}
+
+    
