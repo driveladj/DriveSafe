@@ -1,3 +1,82 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A focused student driver behind the wheel during a lesson.",
+      "imageUrl": "https://images.unsplash.com/photo-1691371107034-e28ee43a669e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkcml2aW5nJTIwbGVzc29ufGVufDB8fHx8MTc2ODM3NTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "driving lesson"
+    },
+    {
+      "id": "car-1",
+      "description": "A modern, clean white car used for driving instruction.",
+      "imageUrl": "https://images.unsplash.com/photo-1690207590732-44edb082a6b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bW9kZXJuJTIwY2FyfGVufDB8fHx8MTc2ODMxODE5NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern car"
+    },
+    {
+      "id": "classroom-1",
+      "description": "A bright and modern classroom for theory lessons.",
+      "imageUrl": "https://images.unsplash.com/photo-1690079374922-7f50d5c1a102?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZHJpdmluZyUyMHNjaG9vbCUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3NjgzNzU0Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "driving school classroom"
+    },
+    {
+      "id": "student-1",
+      "description": "A happy student holding their new driver's license.",
+      "imageUrl": "https://images.unsplash.com/photo-1590987339144-6bb1f3b38174?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzdHVkZW50JTIwZHJpdmVyfGVufDB8fHx8MTc2ODM3NTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student driver"
+    },
+    {
+      "id": "cones-1",
+      "description": "Traffic cones set up for a parking maneuver exercise.",
+      "imageUrl": "https://images.unsplash.com/photo-1583066088355-747b1d46256c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0cmFmZmljJTIwY29uZXxlbnwwfHx8fDE3NjgzNzU0Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "traffic cone"
+    },
+    {
+      "id": "car-interior-1",
+      "description": "The dashboard of a modern training vehicle.",
+      "imageUrl": "https://images.unsplash.com/photo-1615153633779-5c932c7f4cad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjYXIlMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzY4MjkzNzEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car dashboard"
+    },
+    {
+      "id": "motorcycle-1",
+      "description": "A sleek motorcycle for specialized training.",
+      "imageUrl": "https://images.unsplash.com/photo-1758887698915-779ef395fc39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtb3RvcmN5Y2xlJTIwdHJhaW5pbmd8ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "motorcycle training"
+    },
+    {
+      "id": "stop-sign",
+      "description": "An octagonal red stop sign.",
+      "imageUrl": "https://images.unsplash.com/photo-1717859258741-4bbdf06a794e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RvcCUyMHNpZ258ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stop sign"
+    },
+    {
+      "id": "yield-sign",
+      "description": "A triangular yield sign.",
+      "imageUrl": "https://images.unsplash.com/photo-1739782968457-299957511b68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx5aWVsZCUyMHNpZ258ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yield sign"
+    },
+    {
+      "id": "speed-limit-sign",
+      "description": "A speed limit sign indicating 50.",
+      "imageUrl": "https://images.unsplash.com/photo-1696980488680-c5d50aef7a1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzcGVlZCUyMGxpbWl0fGVufDB8fHx8MTc2ODM3NTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "speed limit"
+    },
+    {
+      "id": "about-us-image",
+      "description": "The friendly team of instructors at DriveSafe Academy.",
+      "imageUrl": "https://images.unsplash.com/photo-1559860812-bfa94746fb40?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx0ZWFtJTIwaW5zdHJ1Y3RvcnN8ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "team instructors"
+    },
+    {
+      "id": "car-2",
+      "description": "A side view of a blue training car.",
+      "imageUrl": "https://images.unsplash.com/photo-1682775783098-27d31241eb7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxibHVlJTIwY2FyfGVufDB8fHx8MTc2ODM3NTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blue car"
+    },
+    {
+      "id": "student-2",
+      "description": "An instructor guiding a student during a lesson.",
+      "imageUrl": "https://images.unsplash.com/photo-1659772338512-2d597aee508c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkcml2aW5nJTIwaW5zdHJ1Y3RvcnxlbnwwfHx8fDE3NjgzMDM1Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "driving instructor"
+    }
+  ]
 }
