@@ -72,7 +72,16 @@
     to { transform: translateX(-50%); }
   }
 
-  .animate-marquee {
+  [dir=rtl] .animate-marquee {
+    animation: rtl-marquee 30s linear infinite;
+  }
+
+  [dir=ltr] .animate-marquee {
     animation: marquee 30s linear infinite;
+  }
+
+  @keyframes rtl-marquee {
+      from { transform: translateX(-50%); }
+      to { transform: translateX(0); }
   }
 }
