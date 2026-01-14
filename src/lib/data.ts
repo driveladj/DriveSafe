@@ -1,7 +1,6 @@
 
 import type { LucideIcon } from "lucide-react";
-import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Users } from "lucide-react";
-import { PlaceHolderImages } from "./placeholder-images";
+import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Users, Book } from "lucide-react";
 
 export const navItems = [
     { href: '/', label: 'الرئيسية' },
@@ -56,15 +55,34 @@ const courseIcons: {[key: string]: LucideIcon} = {
 }
 
 const courseImages: {[key: string]: any} = {
-    'b-license': PlaceHolderImages.find(img => img.id === 'car-interior-1'),
-    'moto-license': PlaceHolderImages.find(img => img.id === 'motorcycle-1'),
-    'theory-course': PlaceHolderImages.find(img => img.id === 'classroom-1'),
+    'b-license': {
+      "id": "car-interior-1",
+      "description": "The dashboard of a modern training vehicle.",
+      "imageUrl": "https://images.unsplash.com/photo-1615153633779-5c932c7f4cad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjYXIlMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzY4MjkzNzEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "car dashboard"
+    },
+    'moto-license': {
+      "id": "motorcycle-1",
+      "description": "A sleek motorcycle for specialized training.",
+      "imageUrl": "https://images.unsplash.com/photo-1758887698915-779ef395fc39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtb3RvcmN5Y2xlJTIwdHJhaW5pbmd8ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "motorcycle training"
+    },
+    'theory-course': {
+      "id": "classroom-1",
+      "description": "A bright and modern classroom for theory lessons.",
+      "imageUrl": "https://images.unsplash.com/photo-1690079374922-7f50d5c1a102?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZHJpdmluZyUyMHNjaG9vbCUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3NjgzNzU0Nzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "driving school classroom"
+    },
 }
 
 export function getCourseVisuals(id: string) {
+    const seed = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return {
-        Icon: courseIcons[id] || Car,
-        image: courseImages[id]
+        Icon: courseIcons[id] || Book,
+        image: courseImages[id] || { 
+            imageUrl: `https://picsum.photos/seed/${seed}/600/400`,
+            imageHint: 'driving course'
+        }
     }
 }
 
@@ -121,17 +139,31 @@ export const trafficSigns = [
     {
       title: "علامة قف",
       description: "علامة إلزامية تتطلب من السائقين التوقف تمامًا والتأكد من خلو التقاطع قبل المتابعة.",
-      image: PlaceHolderImages.find(img => img.id === 'stop-sign'),
+      image: {
+        "id": "stop-sign",
+        "description": "An octagonal red stop sign.",
+        "imageUrl": "https://images.unsplash.com/photo-1717859258741-4bbdf06a794e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RvcCUyMHNpZ258ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "imageHint": "stop sign"
+      },
     },
     {
       title: "علامة إعطاء الأولوية",
       description: "تشير إلى أنه يجب على السائقين إبطاء السرعة والاستعداد للتوقف للسماح بمرور حركة المرور الأخرى (بما في ذلك المشاة وراكبي الدراجات) قبل المتابعة.",
-      image: PlaceHolderImages.find(img => img.id === 'yield-sign'),
+      image: {
+        "id": "yield-sign",
+        "description": "A triangular yield sign.",
+        "imageUrl": "https://images.unsplash.com/photo-1739782968457-299957511b68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx5aWVsZCUyMHNpZ258ZW58MHx8fHwxNzY4Mzc1NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "imageHint": "yield sign"
+      },
     },
     {
       title: "حد السرعة 50",
       description: "تحدد السرعة القانونية القصوى عند 50 كيلومترًا في الساعة (أو ميلًا في الساعة، حسب البلد) لجزء الطريق المقبل.",
-      image: PlaceHolderImages.find(img => img.id === 'speed-limit-sign'),
+      image: {
+        "id": "speed-limit-sign",
+        "description": "A speed limit sign indicating 50.",
+        "imageUrl": "https://images.unsplash.com/photo-1696980488680-c5d50aef7a1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzcGVlZCUyMGxpbWl0fGVufDB8fHx8MTc2ODM3NTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+        "imageHint": "speed limit"
+      },
     }
 ]
-

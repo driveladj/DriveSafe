@@ -12,6 +12,10 @@ const CourseSchema = z.object({
   details: z.string(),
 });
 
+function generateRandomId() {
+    return Math.random().toString(36).substring(2, 9);
+}
+
 export async function addCourse(data: unknown) {
   const result = CourseSchema.safeParse(data);
 
@@ -20,11 +24,10 @@ export async function addCourse(data: unknown) {
   }
 
   const { name, description, details } = result.data;
-  const newCourseRef = doc(collection(db, 'courses'));
-  const newCourseId = newCourseRef.id;
+  const newCourseId = generateRandomId();
+  const newCourseRef = doc(db, 'courses', newCourseId);
 
   try {
-    // Use the auto-generated ID for the document
     await setDoc(newCourseRef, {
       id: newCourseId,
       name,
@@ -32,7 +35,6 @@ export async function addCourse(data: unknown) {
       details
     });
 
-    // Revalidate paths to reflect the changes immediately
     revalidatePath('/admin');
     revalidatePath('/courses');
     revalidatePath('/');
