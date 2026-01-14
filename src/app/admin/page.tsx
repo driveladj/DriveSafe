@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
 import DeleteCourseAlert from '@/components/admin/delete-course-alert';
+import EditCourseDialog from '@/components/admin/edit-course-dialog';
 
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
@@ -177,7 +178,8 @@ export default function AdminPage() {
                                     <TableRow key={course.id}>
                                         <TableCell className="font-medium">{course.name}</TableCell>
                                         <TableCell>{course.id}</TableCell>
-                                        <TableCell className="text-left space-x-2">
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditCourseDialog course={course} onCourseUpdated={fetchCourses} />
                                             <DeleteCourseAlert courseId={course.id} onCourseDeleted={fetchCourses} />
                                         </TableCell>
                                     </TableRow>
