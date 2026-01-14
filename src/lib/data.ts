@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from "lucide-react";
 import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Users } from "lucide-react";
 import { PlaceHolderImages } from "./placeholder-images";
@@ -11,6 +12,7 @@ export const navItems = [
     { href: '/gallery', label: 'المعرض' },
     { href: '/faq', label: 'الأسئلة الشائعة' },
     { href: '/contact', label: 'اتصل بنا' },
+    { href: '/dashboard', label: 'لوحة التحكم' },
 ];
 
 export const features = [

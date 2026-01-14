@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -37,17 +38,30 @@ export default function LoginPage() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
         try {
-            // ملاحظة: Firebase Auth تستخدم البريد الإلكتروني بشكل أساسي. 
-            // للتوافق، سنقوم بتوليد بريد إلكتروني وهمي وفريد من رقم الهاتف عند المصادقة.
             const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
 
-            await signInWithEmailAndPassword(auth, emailForAuth, values.password);
-            toast({
-                title: "تم تسجيل الدخول بنجاح!",
-                description: "أهلاً بعودتك.",
-            });
-            // TODO: Reditect to the correct dashboard based on user role (admin vs trainee)
-            router.push("/admin"); 
+            const userCredential = await signInWithEmailAndPassword(auth, emailForAuth, values.password);
+            const user = userCredential.user;
+
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                toast({
+                    title: "تم تسجيل الدخول بنجاح!",
+                    description: `أهلاً بعودتك، ${userData.firstName}.`,
+                });
+                
+                if (userData.role === 'admin') {
+                    router.push("/admin");
+                } else {
+                    router.push("/dashboard");
+                }
+            } else {
+                 throw new Error("لم يتم العثور على بيانات المستخدم.");
+            }
+
         } catch (error: any) {
             console.error("Firebase Auth Error:", error);
             let errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة.";

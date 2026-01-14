@@ -67,22 +67,18 @@ export default function RegistrationForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
         
-        // ملاحظة: Firebase Auth يتطلب بريدًا إلكترونيًا فريدًا.
-        // سننشئ بريدًا إلكترونيًا وهميًا باستخدام رقم الهاتف لضمان التفرد.
         const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
 
         try {
-            // 1. إنشاء المستخدم في Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, emailForAuth, values.password);
             const user = userCredential.user;
 
-            // 2. تخزين بيانات المستخدم الإضافية في Firestore
             const { password, confirmPassword, acceptTerms, ...userData } = values;
             await setDoc(doc(db, "users", user.uid), {
                 ...userData,
                 uid: user.uid,
-                email: emailForAuth, // حفظ البريد الإلكتروني الوهمي كمرجع
-                role: "trainee", // تعيين دور افتراضي
+                email: emailForAuth,
+                role: "trainee",
                 createdAt: new Date(),
             });
 
@@ -91,8 +87,7 @@ export default function RegistrationForm() {
                 description: "مرحبًا بك في أكاديمية القيادة الآمنة. يتم توجيهك الآن...",
             })
             
-            // 3. توجيه المستخدم إلى لوحة التحكم
-            router.push("/admin"); // مؤقتًا إلى لوحة تحكم المدير
+            router.push("/dashboard");
 
         } catch (error: any) {
             console.error("Registration Error:", error)
