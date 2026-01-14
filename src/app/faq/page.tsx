@@ -1,21 +1,31 @@
+
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, DocumentData } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { Loader2 } from 'lucide-react';
 
 type FAQ = {
   q: string;
   a: string;
 };
 
-async function getFaqs(): Promise<FAQ[]> {
-  const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
-  const faqSnapshot = await getDocs(faqsCol);
-  return faqSnapshot.docs.map(doc => doc.data() as FAQ);
-}
+export default function FAQPage() {
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [loading, setLoading] = useState(true);
 
-
-export default async function FAQPage() {
-  const faqs = await getFaqs();
+  useEffect(() => {
+    async function getFaqs() {
+      setLoading(true);
+      const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
+      const faqSnapshot = await getDocs(faqsCol);
+      setFaqs(faqSnapshot.docs.map(doc => doc.data() as FAQ));
+      setLoading(false);
+    }
+    getFaqs();
+  }, []);
 
   return (
     <>
@@ -30,6 +40,11 @@ export default async function FAQPage() {
       
       <section className="py-16 sm:py-24">
         <div className="container max-w-4xl">
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+          ) : (
             <Accordion type="single" collapsible className="w-full space-y-4">
                 {faqs.map((faq, index) => (
                     <AccordionItem key={index} value={`item-${index}`} className="bg-card rounded-lg border px-4">
@@ -39,7 +54,13 @@ export default async function FAQPage() {
                         </AccordionContent>
                     </AccordionItem>
                 ))}
+                {faqs.length === 0 && (
+                  <div className="text-center py-12 bg-card rounded-lg">
+                      <p className="text-muted-foreground">سيتم عرض الأسئلة الشائعة هنا قريباً.</p>
+                  </div>
+                )}
             </Accordion>
+          )}
         </div>
       </section>
     </>

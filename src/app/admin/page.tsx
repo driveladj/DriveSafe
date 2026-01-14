@@ -1,15 +1,38 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, PlusCircle } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, PlusCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCourses } from "@/lib/data-access";
 import type { Course } from "@/lib/data";
+import { useAuth } from '@/hooks/use-auth.tsx';
+import { useRouter } from 'next/navigation';
 
-export default async function AdminPage() {
+export default function AdminPage() {
+    const { user, loading: authLoading, userDetails } = useAuth();
+    const router = useRouter();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const courses = await getCourses(10); // Fetch up to 10 courses
+    useEffect(() => {
+        if (!authLoading) {
+            if (!user || userDetails?.role !== 'admin') {
+                router.push('/login');
+            } else {
+                const fetchCourses = async () => {
+                    setLoading(true);
+                    const fetchedCourses = await getCourses(10);
+                    setCourses(fetchedCourses);
+                    setLoading(false);
+                };
+                fetchCourses();
+            }
+        }
+    }, [user, authLoading, userDetails, router]);
 
     const stats = [
         {
@@ -45,6 +68,14 @@ export default async function AdminPage() {
         { name: "نور ياسين", course: "دورة نظرية فقط", date: "2023-10-24", status: "مكتمل" },
         { name: "علي إبراهيم", course: "رخصة الفئة ب", date: "2023-10-22", status: "ملغي" },
     ];
+    
+    if (authLoading || !user || userDetails?.role !== 'admin') {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex-1 space-y-8 p-8 pt-6 bg-background">
@@ -129,6 +160,11 @@ export default async function AdminPage() {
                         </Button>
                     </CardHeader>
                     <CardContent>
+                       {loading ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -157,6 +193,7 @@ export default async function AdminPage() {
                                 )}
                             </TableBody>
                         </Table>
+                        )}
                     </CardContent>
                 </Card>
             </div>
