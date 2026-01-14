@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, User, LogOut, LayoutDashboard, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import Logo from './logo';
 import { cn } from '@/lib/utils';
 import { navItems } from '@/lib/data';
 import { useAuth } from '@/hooks/use-auth.tsx';
+import { useEditMode, EditModeToggle } from '@/hooks/use-edit-mode';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,8 @@ export default function SiteHeader() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, userDetails, signOutUser, loading } = useAuth();
+  const { isEditMode } = useEditMode();
+
 
   const handleSignOut = async () => {
     await signOutUser();
@@ -54,7 +57,10 @@ export default function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn(
+        "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        isEditMode && "border-edit-mode"
+    )}>
       <div className="container flex h-16 max-w-7xl items-center justify-between">
         <div className="flex items-center gap-2 md:hidden">
             {/* Mobile Navigation */}
@@ -107,7 +113,7 @@ export default function SiteHeader() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-9 w-9">
+                    <Avatar className={cn("h-9 w-9", isEditMode && "ring-2 ring-edit-mode ring-offset-2")}>
                        <AvatarFallback>{getInitials(userDetails.firstName, userDetails.lastName)}</AvatarFallback>
                     </Avatar>
                   </Button>
@@ -128,6 +134,9 @@ export default function SiteHeader() {
                       <span>لوحة التحكم</span>
                     </Link>
                   </DropdownMenuItem>
+                  {userDetails.role === 'admin' && (
+                    <EditModeToggle />
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />

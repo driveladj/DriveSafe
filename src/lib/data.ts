@@ -134,3 +134,4 @@ export const trafficSigns = [
       image: PlaceHolderImages.find(img => img.id === 'speed-limit-sign'),
     }
 ]
+
