@@ -55,6 +55,14 @@ export type FAQ = {
   order: number;
 };
 
+export type PricingTier = {
+    id: string;
+    name: string;
+    price: number;
+    licenseType: string;
+    features: string[];
+    bestDeal: boolean;
+};
 
 const courseIcons: {[key: string]: LucideIcon} = {
     'b-license': Car,
@@ -93,34 +101,6 @@ export function getCourseVisuals(id: string) {
         }
     }
 }
-
-export const pricingTiers = [
-  { 
-    id: 'basic', 
-    name: 'الباقة الأساسية', 
-    price: '450', 
-    licenseType: 'الفئة ب', 
-    features: ['20 درسًا نظريًا', '20 درسًا عمليًا', 'امتحان داخلي'], 
-    bestDeal: false 
-  },
-  { 
-    id: 'premium', 
-    name: 'الباقة المميزة', 
-    price: '650', 
-    licenseType: 'الفئة ب', 
-    features: ['دروس نظرية غير محدودة', '30 درسًا عمليًا', 'شامل رسوم الامتحان الرسمي', 'تتبع التقدم الشخصي'], 
-    bestDeal: true 
-  },
-  { 
-    id: 'motorcycle', 
-    name: 'دورة الدراجات النارية', 
-    price: '350', 
-    licenseType: 'دراجة نارية (A)', 
-    features: ['15 درسًا نظريًا', '20 درسًا عمليًا', 'توفير المعدات'], 
-    bestDeal: false 
-  },
-];
-
 
 export const testimonials = [
   {
@@ -175,3 +155,5 @@ export const trafficSigns = [
       },
     }
 ]
+
+    

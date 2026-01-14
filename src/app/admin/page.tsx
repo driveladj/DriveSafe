@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
-import type { Course, FAQ } from "@/lib/data";
+import type { Course, FAQ, PricingTier } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
@@ -20,6 +20,10 @@ import EditFaqDialog from '@/components/admin/edit-faq-dialog';
 import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
 import HomeContentForm from '@/components/admin/home-content-form';
 import AnnoucementsCard from '@/components/admin/announcements-card';
+import AddPriceDialog from '@/components/admin/add-price-dialog';
+import EditPriceDialog from '@/components/admin/edit-price-dialog';
+import DeletePriceAlert from '@/components/admin/delete-price-alert';
+
 
 interface Trainee {
     uid: string;
@@ -36,10 +40,12 @@ export default function AdminPage() {
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
     const [faqs, setFaqs] = useState<FAQ[]>([]);
+    const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
     const [recentTrainees, setRecentTrainees] = useState<Trainee[]>([]);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingFaqs, setLoadingFaqs] = useState(true);
     const [loadingTrainees, setLoadingTrainees] = useState(true);
+    const [loadingPrices, setLoadingPrices] = useState(true);
 
 
     const fetchCourses = async () => {
@@ -55,6 +61,14 @@ export default function AdminPage() {
       const faqSnapshot = await getDocs(faqsCol);
       setFaqs(faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQ)));
       setLoadingFaqs(false);
+    };
+
+     const fetchPrices = async () => {
+        setLoadingPrices(true);
+        const pricesCol = query(collection(db, 'pricingTiers'), orderBy('price', 'asc'));
+        const priceSnapshot = await getDocs(pricesCol);
+        setPricingTiers(priceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PricingTier)));
+        setLoadingPrices(false);
     };
 
     const fetchRecentTrainees = async () => {
@@ -78,6 +92,7 @@ export default function AdminPage() {
                 fetchCourses();
                 fetchFaqs();
                 fetchRecentTrainees();
+                fetchPrices();
             }
         }
     }, [user, authLoading, userDetails, router]);
@@ -247,6 +262,58 @@ export default function AdminPage() {
                         )}
                     </CardContent>
                 </Card>
+                
+                <Card className="lg:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>إدارة خطط الأسعار</CardTitle>
+                            <CardDescription>إضافة وتعديل وحذف خطط الأسعار.</CardDescription>
+                        </div>
+                        <AddPriceDialog onPriceAdded={fetchPrices} />
+                    </CardHeader>
+                     <CardContent>
+                       {loadingPrices ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead></TableHead>
+                                    <TableHead>اسم الخطة</TableHead>
+                                    <TableHead>السعر</TableHead>
+                                    <TableHead>النوع</TableHead>
+                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pricingTiers.map((tier) => (
+                                    <TableRow key={tier.id}>
+                                        <TableCell>
+                                            {tier.bestDeal && <Star className="w-5 h-5 text-yellow-500 fill-yellow-400" />}
+                                        </TableCell>
+                                        <TableCell className="font-medium">{tier.name}</TableCell>
+                                        <TableCell>${tier.price}</TableCell>
+                                        <TableCell>{tier.licenseType}</TableCell>
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditPriceDialog tier={tier} onPriceUpdated={fetchPrices} />
+                                            <DeletePriceAlert priceId={tier.id} onPriceDeleted={fetchPrices} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {pricingTiers.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center">
+                                            لم يتم العثور على خطط أسعار.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                        )}
+                    </CardContent>
+                </Card>
 
                 <Card className="lg:col-span-2">
                     <CardHeader>
@@ -313,5 +380,7 @@ export default function AdminPage() {
         </div>
     );
 }
+
+    
 
     
