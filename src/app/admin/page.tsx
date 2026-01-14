@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star, ArrowLeft } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star, ArrowLeft, MessageSquare } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
-import type { Course, FAQ, PricingTier } from "@/lib/data";
+import type { Course, FAQ, PricingTier, Testimonial } from "@/lib/data";
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import AddCourseDialog from '@/components/admin/add-course-dialog';
@@ -25,6 +25,9 @@ import AddPriceDialog from '@/components/admin/add-price-dialog';
 import EditPriceDialog from '@/components/admin/edit-price-dialog';
 import DeletePriceAlert from '@/components/admin/delete-price-alert';
 import { Button } from '@/components/ui/button';
+import AddTestimonialDialog from '@/components/admin/add-testimonial-dialog';
+import EditTestimonialDialog from '@/components/admin/edit-testimonial-dialog';
+import DeleteTestimonialAlert from '@/components/admin/delete-testimonial-alert';
 
 
 interface Trainee {
@@ -43,12 +46,14 @@ export default function AdminPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [faqs, setFaqs] = useState<FAQ[]>([]);
     const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [recentTrainees, setRecentTrainees] = useState<Trainee[]>([]);
     const [traineeCount, setTraineeCount] = useState<number | string>('...');
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingFaqs, setLoadingFaqs] = useState(true);
     const [loadingTrainees, setLoadingTrainees] = useState(true);
     const [loadingPrices, setLoadingPrices] = useState(true);
+    const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
 
     const fetchCourses = async () => {
@@ -72,6 +77,14 @@ export default function AdminPage() {
         const priceSnapshot = await getDocs(pricesCol);
         setPricingTiers(priceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PricingTier)));
         setLoadingPrices(false);
+    };
+    
+    const fetchTestimonials = async () => {
+        setLoadingTestimonials(true);
+        const testimonialsCol = query(collection(db, 'testimonials'), orderBy('name', 'asc'));
+        const testimonialSnapshot = await getDocs(testimonialsCol);
+        setTestimonials(testimonialSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial)));
+        setLoadingTestimonials(false);
     };
 
     const fetchRecentTrainees = async () => {
@@ -105,6 +118,7 @@ export default function AdminPage() {
                 fetchFaqs();
                 fetchRecentTrainees();
                 fetchPrices();
+                fetchTestimonials();
             }
         }
     }, [user, authLoading, userDetails, router]);
@@ -330,6 +344,54 @@ export default function AdminPage() {
                 <Card className="lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
+                            <CardTitle>إدارة آراء الطلاب</CardTitle>
+                            <CardDescription>إضافة وتعديل وحذف آراء الطلاب المعروضة في الصفحة الرئيسية.</CardDescription>
+                        </div>
+                        <AddTestimonialDialog onTestimonialAdded={fetchTestimonials} />
+                    </CardHeader>
+                     <CardContent>
+                       {loadingTestimonials ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>الاسم</TableHead>
+                                    <TableHead>الدور</TableHead>
+                                    <TableHead>الرأي</TableHead>
+                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {testimonials.map((testimonial) => (
+                                    <TableRow key={testimonial.id}>
+                                        <TableCell className="font-medium">{testimonial.name}</TableCell>
+                                        <TableCell>{testimonial.role}</TableCell>
+                                        <TableCell className="truncate max-w-[200px]">{testimonial.comment}</TableCell>
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditTestimonialDialog testimonial={testimonial} onTestimonialUpdated={fetchTestimonials} />
+                                            <DeleteTestimonialAlert testimonialId={testimonial.id} onTestimonialDeleted={fetchTestimonials} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {testimonials.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center">
+                                            لم يتم العثور على آراء.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className="lg:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
                             <CardTitle>التسجيلات الأخيرة</CardTitle>
                             <CardDescription>نظرة سريعة على أحدث الطلاب الذين انضموا.</CardDescription>
                         </div>
@@ -399,5 +461,7 @@ export default function AdminPage() {
             </div>
         </div>
     );
+
+    
 
     

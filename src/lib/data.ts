@@ -64,6 +64,15 @@ export type PricingTier = {
     bestDeal: boolean;
 };
 
+export type Testimonial = {
+    id: string;
+    name: string;
+    role: string;
+    avatar: 'Smile' | 'Users' | 'HeartHandshake';
+    comment: string;
+};
+
+
 const courseIcons: {[key: string]: LucideIcon} = {
     'b-license': Car,
     'moto-license': Bike,
@@ -102,27 +111,6 @@ export function getCourseVisuals(id: string) {
     }
 }
 
-export const testimonials = [
-  {
-    name: "عائشة ك.",
-    role: "سائقة جديدة",
-    avatar: Smile,
-    comment: "أكاديمية القيادة الآمنة جعلت تعلم القيادة سهلاً وخالياً من التوتر! كان مدربي صبوراً وداعماً بشكل لا يصدق. لقد نجحت في اختباري من المحاولة الأولى!",
-  },
-  {
-    name: "محمد ر.",
-    role: "متحمس للدراجات النارية",
-    avatar: Users,
-    comment: "كانت دورة الدراجات النارية رائعة. المدربون خبراء حقيقيون ويركزون بشدة على السلامة. أشعر بثقة أكبر على الطريق الآن. موصى به بشدة!",
-  },
-  {
-    name: "فاطمة ز.",
-    role: "طالبة",
-    avatar: HeartHandshake,
-    comment: "كنت متوترة للغاية بشأن القيادة، لكن فريق أكاديمية القيادة الآمنة كان مرحبًا جدًا. لقد ساعدوني في بناء ثقتي خطوة بخطوة. تجربة رائعة!",
-  },
-];
-
 export const trafficSigns = [
     {
       title: "علامة قف",
@@ -155,5 +143,7 @@ export const trafficSigns = [
       },
     }
 ]
+
+    
 
     
