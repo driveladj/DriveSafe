@@ -5,12 +5,13 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, PlusCircle, Loader2 } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCourses } from "@/lib/data-access";
 import type { Course } from "@/lib/data";
-import { useAuth } from '@/hooks/use-auth.tsx';
+import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import AddCourseDialog from '@/components/admin/add-course-dialog';
 
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
@@ -18,17 +19,18 @@ export default function AdminPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const fetchCourses = async () => {
+        setLoading(true);
+        const fetchedCourses = await getCourses(10);
+        setCourses(fetchedCourses);
+        setLoading(false);
+    };
+
     useEffect(() => {
         if (!authLoading) {
             if (!user || userDetails?.role !== 'admin') {
                 router.push('/login');
             } else {
-                const fetchCourses = async () => {
-                    setLoading(true);
-                    const fetchedCourses = await getCourses(10);
-                    setCourses(fetchedCourses);
-                    setLoading(false);
-                };
                 fetchCourses();
             }
         }
@@ -55,7 +57,7 @@ export default function AdminPage() {
         },
         {
             title: "الدورات النشطة",
-            value: "3",
+            value: courses.length,
             icon: BookOpen,
             change: "",
         }
@@ -154,10 +156,7 @@ export default function AdminPage() {
                             <CardTitle>إدارة الدورات</CardTitle>
                             <CardDescription>إضافة وتعديل وحذف الدورات التدريبية.</CardDescription>
                         </div>
-                        <Button size="sm" className="gap-1">
-                            <PlusCircle className="h-4 w-4" />
-                            دورة جديدة
-                        </Button>
+                        <AddCourseDialog onCourseAdded={fetchCourses} />
                     </CardHeader>
                     <CardContent>
                        {loading ? (
@@ -178,9 +177,9 @@ export default function AdminPage() {
                                     <TableRow key={course.id}>
                                         <TableCell className="font-medium">{course.name}</TableCell>
                                         <TableCell>{course.id}</TableCell>
-                                        <TableCell className="text-left">
-                                            <Button variant="outline" size="sm" className="ml-2">تعديل</Button>
-                                            <Button variant="destructive" size="sm">حذف</Button>
+                                        <TableCell className="text-left space-x-2">
+                                            <Button variant="outline" size="sm" className="ml-2"><Edit className="w-4 h-4" /></Button>
+                                            <Button variant="destructive" size="sm"><Trash2 className="w-4 h-4" /></Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
