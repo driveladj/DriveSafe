@@ -10,7 +10,6 @@ export const navItems = [
     { href: '/banners', label: 'اللافتات' },
     { href: '/gallery', label: 'المعرض' },
     { href: '/faq', label: 'الأسئلة الشائعة' },
-    { href: '/ai-curriculum', label: 'AI المناهج'},
     { href: '/contact', label: 'اتصل بنا' },
 ];
 
