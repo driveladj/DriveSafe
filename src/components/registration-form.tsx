@@ -7,8 +7,9 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import React, { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,8 +26,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
-import { useState } from "react"
-import { courses } from "@/lib/data"
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "يجب أن يتكون الاسم الأول من حرفين على الأقل." }),
@@ -49,6 +48,18 @@ export default function RegistrationForm() {
     const { toast } = useToast()
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
+    const [courses, setCourses] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+      const fetchCourses = async () => {
+        const coursesCollection = collection(db, 'courses');
+        const courseSnapshot = await getDocs(coursesCollection);
+        const courseList = courseSnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+        setCourses(courseList);
+      };
+
+      fetchCourses();
+    }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -147,7 +158,7 @@ export default function RegistrationForm() {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                                 <SelectContent>
-                                    {courses.map(course => <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>)}
+                                    {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         <FormMessage /></FormItem>

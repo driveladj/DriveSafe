@@ -1,10 +1,30 @@
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { courses } from "@/lib/data";
+import { getCourseVisuals, type Course } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, DocumentData } from "firebase/firestore";
 
-export default function CoursesPage() {
+async function getCourses(): Promise<Course[]> {
+  const coursesCol = collection(db, 'courses');
+  const courseSnapshot = await getDocs(coursesCol);
+  const courseList = courseSnapshot.docs.map(doc => doc.data() as DocumentData);
+  
+  return courseList.map(course => {
+    const visuals = getCourseVisuals(course.id);
+    return {
+      ...course,
+      ...visuals,
+    } as Course;
+  });
+}
+
+export default async function CoursesPage() {
+
+  const courses = await getCourses();
+
   return (
     <>
       <section className="py-16 sm:py-24 bg-secondary">

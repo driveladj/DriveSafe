@@ -1,11 +1,31 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { courses } from "@/lib/data";
+import { getCourseVisuals, type Course } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, DocumentData, limit, query } from "firebase/firestore";
 
-export default function CoursesSection() {
+async function getCourses(): Promise<Course[]> {
+  const coursesCol = query(collection(db, 'courses'), limit(3));
+  const courseSnapshot = await getDocs(coursesCol);
+  const courseList = courseSnapshot.docs.map(doc => doc.data() as DocumentData);
+  
+  return courseList.map(course => {
+    const visuals = getCourseVisuals(course.id);
+    return {
+      ...course,
+      ...visuals,
+    } as Course;
+  });
+}
+
+
+export default async function CoursesSection() {
+  const courses = await getCourses();
+
   return (
     <section className="py-16 sm:py-24 bg-secondary">
       <div className="container">

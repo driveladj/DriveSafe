@@ -38,32 +38,36 @@ export const features = [
     },
 ];
 
-export const courses = [
-  { 
-    id: 'b-license', 
-    name: 'رخصة الفئة ب', 
-    description: 'تدريب شامل لسيارات الركاب، من المناورات الأساسية إلى المواقف المرورية المعقدة.', 
-    details: '40 ساعة من التدريب، تشمل 20 ساعة من الدروس النظرية و 20 ساعة من الدروس العملية.', 
-    Icon: Car,
-    image: PlaceHolderImages.find(img => img.id === 'car-interior-1'),
-  },
-  { 
-    id: 'moto-license', 
-    name: 'رخصة دراجة نارية', 
-    description: 'تعلم قيادة الدراجات النارية والتحكم بها بأمان على الطريق مع توجيهات خبرائنا.', 
-    details: '25 ساعة من التدريب المتخصص لجميع أنواع الدراجات النارية (A1, A2, A).', 
-    Icon: Bike,
-    image: PlaceHolderImages.find(img => img.id === 'motorcycle-1'),
-  },
-  {
-    id: 'theory-course',
-    name: 'دورة نظرية فقط',
-    description: 'استعد لامتحانك النظري من خلال مواردنا المكثفة في الفصول الدراسية وعبر الإنترنت.',
-    details: '20 ساعة من الجلسات الدراسية المعمقة التي تغطي جميع قوانين وإشارات المرور.',
-    Icon: Presentation,
-    image: PlaceHolderImages.find(img => img.id === 'classroom-1'),
-  }
-];
+export type Course = {
+    id: string;
+    name: string;
+    description: string;
+    details: string;
+    Icon: LucideIcon;
+    image: {
+        imageUrl: string;
+        imageHint: string;
+    } | undefined;
+}
+
+const courseIcons: {[key: string]: LucideIcon} = {
+    'b-license': Car,
+    'moto-license': Bike,
+    'theory-course': Presentation,
+}
+
+const courseImages: {[key: string]: any} = {
+    'b-license': PlaceHolderImages.find(img => img.id === 'car-interior-1'),
+    'moto-license': PlaceHolderImages.find(img => img.id === 'motorcycle-1'),
+    'theory-course': PlaceHolderImages.find(img => img.id === 'classroom-1'),
+}
+
+export function getCourseVisuals(id: string) {
+    return {
+        Icon: courseIcons[id] || Car,
+        image: courseImages[id]
+    }
+}
 
 export const pricingTiers = [
   { 
