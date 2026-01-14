@@ -64,7 +64,7 @@ export default function LoginPage() {
 
         } catch (error: any) {
             console.error("Firebase Auth Error:", error);
-            let errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة.";
+            let errorMessage = "حدث خطأ أثناء تسجيل الدخول.";
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
                 errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.";
             }

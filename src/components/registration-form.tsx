@@ -106,6 +106,8 @@ export default function RegistrationForm() {
             let errorMessage = "حدث خطأ غير متوقع أثناء التسجيل.";
             if (error.code === "auth/email-already-in-use") {
                 errorMessage = "هذا الرقم مسجل بالفعل. حاول تسجيل الدخول.";
+            } else if (error.code) {
+                errorMessage = `فشل التسجيل: ${error.code}`;
             }
             toast({
                 title: "فشل التسجيل",
@@ -133,7 +135,7 @@ export default function RegistrationForm() {
                         <FormItem>
                             <FormLabel>تاريخ الميلاد</FormLabel>
                             <FormControl>
-                                <Input placeholder="YYYY-MM-DD" {...field} />
+                                <Input placeholder="YYYY-MM-DD" {...field} type="date" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -158,7 +160,7 @@ export default function RegistrationForm() {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                                 <SelectContent>
-                                    <SelectItem value="no-course">لا يوجد</SelectItem>
+                                    <SelectItem value="no-course">لم أحدد بعد</SelectItem>
                                     {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
