@@ -32,7 +32,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, { message: "يجب أن يتكون اسم العائلة من حرفين على الأقل." }),
   dob: z.string().min(1, { message: "تاريخ الميلاد مطلوب." }),
   birthPlace: z.string().min(2, { message: "مكان الميلاد مطلوب." }),
-  gender: z.enum(["male", "female", "other"], { required_error: "يرجى تحديد الجنس." }),
+  gender: z.enum(["male", "female"], { required_error: "يرجى تحديد الجنس." }),
   licenseType: z.string().optional(),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "يرجى إدخال رقم هاتف صالح." }),
   password: z.string().min(8, { message: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
@@ -148,7 +148,6 @@ export default function RegistrationForm() {
                             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                 <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="male" /></FormControl><FormLabel className="font-normal">ذكر</FormLabel></FormItem>
                                 <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="female" /></FormControl><FormLabel className="font-normal">أنثى</FormLabel></FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="other" /></FormControl><FormLabel className="font-normal">آخر</FormLabel></FormItem>
                             </RadioGroup>
                         </FormControl>
                     <FormMessage /></FormItem>
