@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -18,7 +17,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,13 +26,19 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, PlusCircle } from 'lucide-react';
-import { addCourse } from '@/lib/actions';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { revalidatePath } from 'next/cache';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Course name is required'),
   description: z.string().min(10, 'Description is required'),
   details: z.string().min(10, 'Details are required'),
 });
+
+function generateRandomId() {
+    return Math.random().toString(36).substring(2, 11);
+}
 
 export default function AddCourseDialog({ onCourseAdded }: { onCourseAdded: () => void }) {
   const [open, setOpen] = useState(false);
@@ -52,24 +56,35 @@ export default function AddCourseDialog({ onCourseAdded }: { onCourseAdded: () =
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    const result = await addCourse(values);
+    
+    const newCourseId = generateRandomId();
+    const newCourseRef = doc(db, 'courses', newCourseId);
 
-    if (result.success) {
+    try {
+      await setDoc(newCourseRef, {
+        id: newCourseId,
+        ...values
+      });
+
       toast({
         title: 'Success!',
         description: 'The new course has been added successfully.',
       });
+      
       form.reset();
       setOpen(false);
       onCourseAdded(); // Refresh the course list
-    } else {
+
+    } catch (error) {
+      console.error('Error adding course: ', error);
       toast({
         title: 'Error',
-        description: result.error,
+        description: 'Failed to add course to the database.',
         variant: 'destructive',
       });
+    } finally {
+        setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }
 
   return (

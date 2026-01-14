@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -15,8 +14,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { deleteCourse } from '@/lib/actions';
 import { Loader2, Trash2 } from 'lucide-react';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function DeleteCourseAlert({
   courseId,
@@ -31,23 +31,37 @@ export default function DeleteCourseAlert({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const result = await deleteCourse(courseId);
 
-    if (result.success) {
+    if (!courseId) {
+      toast({
+        title: 'Error',
+        description: 'Course ID is missing.',
+        variant: 'destructive',
+      });
+      setIsDeleting(false);
+      return;
+    }
+
+    const courseRef = doc(db, 'courses', courseId);
+    
+    try {
+      await deleteDoc(courseRef);
       toast({
         title: 'تم الحذف!',
         description: 'تم حذف الدورة بنجاح.',
       });
       setOpen(false);
       onCourseDeleted();
-    } else {
+    } catch (error) {
+      console.error('Error deleting course:', error);
       toast({
         title: 'خطأ',
-        description: result.error,
+        description: 'Failed to delete course from the database.',
         variant: 'destructive',
       });
+    } finally {
+      setIsDeleting(false);
     }
-    setIsDeleting(false);
   };
 
   return (
