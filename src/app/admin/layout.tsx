@@ -41,6 +41,13 @@ const AdminSidebar = () => (
                            <ChevronLeft className="h-4 w-4" />
                             صفحة من نحن
                         </Link>
+                        <Link
+                            href="/admin/content/footer"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        >
+                           <ChevronLeft className="h-4 w-4" />
+                            تذييل الصفحة
+                        </Link>
                     </div>
                      <div className="px-3 py-2">
                         <h4 className="mb-1 rounded-lg text-sm font-semibold text-primary">إدارة الموقع</h4>
