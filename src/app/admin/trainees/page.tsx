@@ -173,7 +173,7 @@ export default function TraineesPage() {
 
     return (
         <>
-            <style jsx global>{\`
+            <style>{`
                 @media screen {
                   .print-container {
                       display: none;
@@ -230,7 +230,7 @@ export default function TraineesPage() {
                         font-weight: bold;
                     }
                 }
-            \`}</style>
+            `}</style>
 
             <div className="print-container">
                     {printHeader && (
@@ -336,6 +336,3 @@ export default function TraineesPage() {
             </div>
         </>
     );
-}
-
-    
