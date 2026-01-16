@@ -175,11 +175,6 @@ export default function TraineesPage() {
     return (
         <>
             <style>{`
-                @media screen {
-                  .print-container {
-                      display: none;
-                  }
-                }
                 @media print {
                     body {
                         visibility: hidden;
@@ -229,6 +224,9 @@ export default function TraineesPage() {
                         text-align: left;    
                         font-size: 1rem;
                         font-weight: bold;
+                    }
+                    .screen-only-content {
+                        display: none;
                     }
                 }
             `}</style>
@@ -337,3 +335,4 @@ export default function TraineesPage() {
             </div>
         </>
     );
+}
