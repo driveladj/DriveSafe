@@ -109,14 +109,14 @@ export default function SiteHeader() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-9 w-9">
-                       <AvatarFallback>{getInitials(userDetails.firstName, userDetails.lastName)}</AvatarFallback>
+                       <AvatarFallback>{getInitials(userDetails.firstNameAr, userDetails.lastNameAr)}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{userDetails.firstName} {userDetails.lastName}</p>
+                      <p className="text-sm font-medium leading-none">{userDetails.firstNameAr} {userDetails.lastNameAr}</p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {userDetails.role === 'admin' ? 'مدير' : 'متدرب'}
                       </p>

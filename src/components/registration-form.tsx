@@ -7,7 +7,7 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getDocs, collection } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, Timestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import React, { useEffect, useState } from "react";
 
@@ -28,8 +28,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
-  firstName: z.string().min(2, { message: "يجب أن يتكون الاسم الأول من حرفين على الأقل." }),
-  lastName: z.string().min(2, { message: "يجب أن يتكون اسم العائلة من حرفين على الأقل." }),
+  firstNameAr: z.string().min(2, { message: "الاسم الأول (بالعربية) مطلوب." }),
+  lastNameAr: z.string().min(2, { message: "اسم العائلة (بالعربية) مطلوب." }),
+  firstNameEn: z.string().min(2, { message: "الاسم الأول (باللاتينية) مطلوب." }),
+  lastNameEn: z.string().min(2, { message: "اسم العائلة (باللاتينية) مطلوب." }),
   dob: z.string().min(1, { message: "تاريخ الميلاد مطلوب." }),
   birthPlace: z.string().min(2, { message: "مكان الميلاد مطلوب." }),
   gender: z.enum(["male", "female"], { required_error: "يرجى تحديد الجنس." }),
@@ -64,8 +66,10 @@ export default function RegistrationForm() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            firstName: "",
-            lastName: "",
+            firstNameAr: "",
+            lastNameAr: "",
+            firstNameEn: "",
+            lastNameEn: "",
             dob: "",
             birthPlace: "",
             phone: "",
@@ -91,7 +95,8 @@ export default function RegistrationForm() {
                 uid: user.uid,
                 email: emailForAuth,
                 role: "trainee",
-                createdAt: new Date(),
+                status: 'في الانتظار',
+                createdAt: Timestamp.now(),
             });
 
             toast({
@@ -122,13 +127,24 @@ export default function RegistrationForm() {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-8 border rounded-lg bg-card">
-                <div className="grid md:grid-cols-2 gap-8">
-                    <FormField control={form.control} name="firstName" render={({ field }) => (
-                        <FormItem><FormLabel>الاسم الأول</FormLabel><FormControl><Input placeholder="John" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={form.control} name="lastName" render={({ field }) => (
-                        <FormItem><FormLabel>اسم العائلة</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
+                 <div className="space-y-4">
+                    <p className="text-sm font-medium">الاسم الكامل (كما في الوثائق الرسمية)</p>
+                    <div className="grid md:grid-cols-2 gap-4 p-4 border rounded-md">
+                        <FormField control={form.control} name="firstNameAr" render={({ field }) => (
+                            <FormItem><FormLabel>الاسم الأول (بالعربية)</FormLabel><FormControl><Input placeholder="عبد الله" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="lastNameAr" render={({ field }) => (
+                            <FormItem><FormLabel>اسم العائلة (بالعربية)</FormLabel><FormControl><Input placeholder="منصوري" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4 p-4 border rounded-md">
+                        <FormField control={form.control} name="firstNameEn" render={({ field }) => (
+                            <FormItem><FormLabel>الاسم الأول (باللاتينية)</FormLabel><FormControl><Input placeholder="Abdullah" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="lastNameEn" render={({ field }) => (
+                            <FormItem><FormLabel>اسم العائلة (باللاتينية)</FormLabel><FormControl><Input placeholder="Mansouri" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
                      <FormField control={form.control} name="dob" render={({ field }) => (
