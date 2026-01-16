@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useAuth } from "@/hooks/use-auth.tsx";
@@ -13,6 +12,7 @@ import { db } from '@/lib/firebase';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Link from 'next/link';
+import TraineeExamProgress from "@/components/trainee/trainee-exam-progress";
 
 interface Announcement {
     id: string;
@@ -46,8 +46,10 @@ export default function DashboardPage() {
             }
         };
 
-        fetchAnnouncements();
-    }, []);
+        if (user) {
+            fetchAnnouncements();
+        }
+    }, [user]);
 
     if (loading || !user || !userDetails) {
         return (
@@ -64,7 +66,7 @@ export default function DashboardPage() {
     return (
         <div className="container py-12">
             <div className="space-y-4 mb-8">
-                <h1 className="font-headline text-4xl font-bold">مرحباً بك، {userDetails.firstName}</h1>
+                <h1 className="font-headline text-4xl font-bold">مرحباً بك، {userDetails.firstNameAr}</h1>
                 <p className="text-lg text-muted-foreground">هذه هي لوحة تحكم المتدرب الخاصة بك.</p>
             </div>
 
@@ -75,25 +77,16 @@ export default function DashboardPage() {
                         <CardDescription>عرض وتحديث معلوماتك الشخصية.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p><strong>الاسم:</strong> {userDetails.firstName} {userDetails.lastName}</p>
+                        <p><strong>الاسم:</strong> {userDetails.firstNameAr} {userDetails.lastNameAr}</p>
                         <p><strong>رقم الهاتف:</strong> {userDetails.phone}</p>
                         <p><strong>الدورة المسجلة:</strong> {userDetails.licenseType}</p>
                         <Button variant="outline" className="mt-4">تعديل الملف الشخصي</Button>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>تقدمي في الدورة</CardTitle>
-                        <CardDescription>تابع دروسك وجدولك الزمني.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>لم يتم تسجيل أي تقدم بعد.</p>
-                        <Button className="mt-4">عرض الجدول الزمني</Button>
-                    </CardContent>
-                </Card>
+                <TraineeExamProgress />
                 
-                <Card className="lg:col-span-3">
+                <Card>
                     <CardHeader>
                         <CardTitle>الإشعارات</CardTitle>
                         <CardDescription>آخر التحديثات من الأكاديمية.</CardDescription>
