@@ -9,13 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, RotateCcw } from 'lucide-react';
+import { Loader2, RotateCcw, CheckCircle } from 'lucide-react';
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { cn } from '@/lib/utils';
 
 const hslColorString = z.string().regex(/^\d{1,3}\s+\d{1,3}%\s+\d{1,3}%$/, {
   message: "يجب أن يكون اللون بتنسيق HSL، مثال: '210 40% 98%'",
@@ -38,7 +39,70 @@ const formSchema = z.object({
   ring: hslColorString.optional().or(z.literal('')),
 });
 
-const colorFields: { name: keyof z.infer<typeof formSchema>, label: string, description: string }[] = [
+type ThemeSettings = z.infer<typeof formSchema>;
+interface Theme {
+  name: string;
+  label: string;
+  settings: ThemeSettings;
+}
+
+const themes: Theme[] = [
+  {
+    name: 'default',
+    label: 'الافتراضي',
+    settings: {
+      fontHeadline: 'Cairo', fontBody: 'Tajawal',
+      background: '210 17% 95%', foreground: '210 31% 20%',
+      card: '210 20% 100%', cardForeground: '210 31% 20%',
+      primary: '210 31% 28%', primaryForeground: '210 40% 98%',
+      secondary: '210 17% 87%', secondaryForeground: '210 31% 28%',
+      accent: '174 63% 37%', accentForeground: '210 40% 98%',
+      border: '210 10% 85%', ring: '174 63% 37%',
+    },
+  },
+  {
+    name: 'dark',
+    label: 'الداكن',
+    settings: {
+      fontHeadline: 'Cairo', fontBody: 'Tajawal',
+      background: '222 47% 11%', foreground: '210 40% 98%',
+      card: '222 47% 15%', cardForeground: '210 40% 98%',
+      primary: '210 40% 98%', primaryForeground: '222 47% 11%',
+      secondary: '222 47% 18%', secondaryForeground: '210 40% 98%',
+      accent: '174 63% 45%', accentForeground: '222 47% 11%',
+      border: '222 47% 22%', ring: '174 63% 45%',
+    },
+  },
+  {
+    name: 'ocean',
+    label: 'المحيط الأزرق',
+    settings: {
+      fontHeadline: 'Readex Pro', fontBody: 'Almarai',
+      background: '205 90% 96%', foreground: '215 39% 23%',
+      card: '0 0% 100%', cardForeground: '215 39% 23%',
+      primary: '214 89% 52%', primaryForeground: '0 0% 100%',
+      secondary: '210 40% 90%', secondaryForeground: '215 39% 23%',
+      accent: '35 92% 60%', accentForeground: '215 39% 23%',
+      border: '210 40% 85%', ring: '214 89% 52%',
+    },
+  },
+  {
+    name: 'vibrant',
+    label: 'حيوي وعصري',
+    settings: {
+        fontHeadline: 'Tajawal', fontBody: 'Cairo',
+        background: '0 0% 98%', foreground: '0 0% 9%',
+        card: '0 0% 100%', cardForeground: '0 0% 9%',
+        primary: '250 89% 60%', primaryForeground: '0 0% 98%',
+        secondary: '0 0% 94%', secondaryForeground: '0 0% 9%',
+        accent: '348 91% 60%', accentForeground: '0 0% 98%',
+        border: '0 0% 89%', ring: '250 89% 60%',
+    }
+  }
+];
+
+
+const colorFields: { name: keyof ThemeSettings, label: string, description: string }[] = [
     { name: 'background', label: 'الخلفية', description: 'اللون الأساسي لخلفية الموقع.' },
     { name: 'foreground', label: 'النص الأساسي', description: 'لون النص العام على الخلفية الأساسية.' },
     { name: 'primary', label: 'الأساسي', description: 'لون العناصر الرئيسية كالأزرار والروابط المهمة.' },
@@ -61,7 +125,6 @@ const availableFonts = [
     { value: 'Amiri', label: 'Amiri' },
 ];
 
-// --- Color Conversion Helpers ---
 function hexToHslString(hex: string): string {
     let r = 0, g = 0, b = 0;
     if (hex.length === 4) {
@@ -118,12 +181,28 @@ function hslStringToHex(hslStr: string): string {
 export default function AppearanceForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTheme, setActiveTheme] = useState('custom');
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
+
+  const checkActiveTheme = (values: ThemeSettings) => {
+    const matchedTheme = themes.find(theme => 
+      Object.keys(theme.settings).every(key => {
+        const themeValue = theme.settings[key as keyof ThemeSettings] || '';
+        const formValue = values[key as keyof ThemeSettings] || '';
+        return themeValue === formValue;
+      })
+    );
+    if (matchedTheme) {
+        setActiveTheme(matchedTheme.name);
+    } else {
+        setActiveTheme('custom');
+    }
+  };
 
   useEffect(() => {
     async function fetchContent() {
@@ -132,7 +211,12 @@ export default function AppearanceForm() {
       try {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          form.reset(docSnap.data());
+          const data = docSnap.data() as ThemeSettings;
+          form.reset(data);
+          checkActiveTheme(data);
+        } else {
+            form.reset(themes.find(t => t.name === 'default')?.settings);
+            setActiveTheme('default');
         }
       } catch (error) {
         console.error('Error fetching appearance settings:', error);
@@ -147,6 +231,14 @@ export default function AppearanceForm() {
     }
     fetchContent();
   }, [form, toast]);
+  
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+        checkActiveTheme(values as ThemeSettings);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -195,11 +287,20 @@ export default function AppearanceForm() {
         setIsSubmitting(false);
     }
   };
-
+  
+  const applyTheme = (theme: Theme) => {
+    form.reset(theme.settings);
+    setActiveTheme(theme.name);
+    toast({
+        title: `تم تطبيق تصميم "${theme.label}"`,
+        description: "اضغط على 'حفظ التغييرات' لجعله دائماً.",
+    });
+  };
 
   if (isLoading) {
     return (
       <div className="space-y-8">
+        <Skeleton className="h-40 w-full" />
         <Skeleton className="h-40 w-full" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -209,6 +310,47 @@ export default function AppearanceForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+        <Card>
+            <CardHeader>
+                <CardTitle>تصاميم جاهزة</CardTitle>
+                <CardDescription>اختر تصميمًا جاهزًا لتغيير مظهر الموقع بالكامل بنقرة واحدة.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {themes.map((theme) => (
+                    <div key={theme.name} onClick={() => applyTheme(theme)} className="cursor-pointer group">
+                        <div className={cn(
+                            "rounded-lg border-2 p-4 transition-all h-full",
+                            activeTheme === theme.name ? "border-primary ring-2 ring-primary ring-offset-2" : "border-muted group-hover:border-primary/50"
+                        )}>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-semibold">{theme.label}</span>
+                                {activeTheme === theme.name && <CheckCircle className="h-5 w-5 text-primary" />}
+                            </div>
+                            <div className="flex space-x-1 rtl:space-x-reverse h-6">
+                                <div className="w-1/4 rounded" style={{ backgroundColor: theme.settings.background ? hslStringToHex(theme.settings.background) : '#ffffff' }}></div>
+                                <div className="w-1/4 rounded" style={{ backgroundColor: theme.settings.primary ? hslStringToHex(theme.settings.primary) : '#000000' }}></div>
+                                <div className="w-1/4 rounded" style={{ backgroundColor: theme.settings.secondary ? hslStringToHex(theme.settings.secondary) : '#f1f5f9' }}></div>
+                                <div className="w-1/4 rounded" style={{ backgroundColor: theme.settings.accent ? hslStringToHex(theme.settings.accent) : '#2dd4bf' }}></div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                 <div onClick={() => { /* Does nothing on click, just for visual state */ }} className="cursor-pointer group">
+                    <div className={cn(
+                        "rounded-lg border-2 p-4 transition-all flex flex-col items-center justify-center h-full text-center",
+                        activeTheme === 'custom' ? "border-primary ring-2 ring-primary ring-offset-2" : "border-dashed border-muted group-hover:border-primary/50"
+                    )}>
+                        <span className="text-sm font-semibold mb-2">تخصيص يدوي</span>
+                         {activeTheme === 'custom' ?
+                            <CheckCircle className="h-5 w-5 text-primary" /> :
+                            <p className="text-xs text-muted-foreground">تعديل الألوان أدناه</p>
+                         }
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
         <Card>
             <CardHeader>
                 <CardTitle>الخطوط</CardTitle>
@@ -218,7 +360,7 @@ export default function AppearanceForm() {
                 <FormField control={form.control} name="fontHeadline" render={({ field }) => (
                     <FormItem>
                         <FormLabel>خط العناوين</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value ?? ''}>
                           <FormControl><SelectTrigger><SelectValue placeholder="اختر خطًا للعناوين" /></SelectTrigger></FormControl>
                           <SelectContent>
                             {availableFonts.map(font => <SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>)}
@@ -230,7 +372,7 @@ export default function AppearanceForm() {
                  <FormField control={form.control} name="fontBody" render={({ field }) => (
                     <FormItem>
                         <FormLabel>خط النصوص</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value ?? ''}>
                           <FormControl><SelectTrigger><SelectValue placeholder="اختر خطًا للنصوص" /></SelectTrigger></FormControl>
                           <SelectContent>
                             {availableFonts.map(font => <SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>)}
