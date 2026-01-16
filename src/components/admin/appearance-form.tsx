@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,12 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { Loader2, RotateCcw } from 'lucide-react';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const hslColorString = z.string().regex(/^\d{1,3}\s+\d{1,3}%\s+\d{1,3}%$/, {
   message: "يجب أن يكون اللون بتنسيق HSL، مثال: '210 40% 98%'",
@@ -61,6 +61,60 @@ const availableFonts = [
     { value: 'Amiri', label: 'Amiri' },
 ];
 
+// --- Color Conversion Helpers ---
+function hexToHslString(hex: string): string {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(5, 7), 16);
+    }
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+    return `${h} ${s}% ${l}%`;
+}
+
+function hslStringToHex(hslStr: string): string {
+    if (!hslStr?.trim()) return '#000000';
+    const [h, s, l] = hslStr.match(/\d+/g)?.map(Number) || [0, 0, 0];
+    const s_norm = s / 100;
+    const l_norm = l / 100;
+    const c = (1 - Math.abs(2 * l_norm - 1)) * s_norm;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l_norm - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h >= 0 && h < 60) { [r, g, b] = [c, x, 0]; }
+    else if (h >= 60 && h < 120) { [r, g, b] = [x, c, 0]; }
+    else if (h >= 120 && h < 180) { [r, g, b] = [0, c, x]; }
+    else if (h >= 180 && h < 240) { [r, g, b] = [0, x, c]; }
+    else if (h >= 240 && h < 300) { [r, g, b] = [x, 0, c]; }
+    else if (h >= 300 && h < 360) { [r, g, b] = [c, 0, x]; }
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+    const toHex = (c: number) => ('0' + c.toString(16)).slice(-2);
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+
 export default function AppearanceForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,11 +152,9 @@ export default function AppearanceForm() {
     setIsSubmitting(true);
     const docRef = doc(db, 'settings', 'appearance');
     try {
-      // Filter out empty strings before saving
       const dataToSave = Object.fromEntries(
         Object.entries(values).filter(([_, v]) => v !== '' && v != null)
       );
-
       await setDoc(docRef, dataToSave, { merge: true });
       toast({
         title: 'تم الحفظ بنجاح!',
@@ -120,6 +172,30 @@ export default function AppearanceForm() {
       setIsSubmitting(false);
     }
   }
+
+  const handleResetToDefaults = async () => {
+    setIsSubmitting(true);
+    const docRef = doc(db, 'settings', 'appearance');
+    try {
+        await deleteDoc(docRef);
+        toast({
+            title: "تمت إعادة التعيين!",
+            description: "تمت استعادة إعدادات المظهر الافتراضية. سيتم تحديث الصفحة.",
+        });
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    } catch (error) {
+        console.error("Error resetting defaults:", error);
+        toast({
+            title: 'خطأ',
+            description: 'فشل إعادة التعيين إلى الإعدادات الافتراضية.',
+            variant: 'destructive',
+        });
+        setIsSubmitting(false);
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -170,9 +246,7 @@ export default function AppearanceForm() {
             <CardHeader>
                 <CardTitle>لوحة الألوان</CardTitle>
                 <CardDescription>
-                    أدخل قيم HSL لكل لون. اترك الحقل فارغًا لاستخدام القيمة الافتراضية.
-                    <br />
-                    التنسيق المطلوب: Hue Saturation% Lightness% (مثال: 210 40% 98%).
+                    انقر على مربع اللون لاختيار لون جديد.
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
@@ -184,11 +258,18 @@ export default function AppearanceForm() {
                       render={({ field }) => (
                         <FormItem>
                             <FormLabel>{label}</FormLabel>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                                 <FormControl>
-                                    <Input placeholder="مثال: 210 31% 28%" {...field} value={field.value ?? ''} />
+                                    <Input 
+                                      type="color" 
+                                      className="w-12 h-10 p-1 cursor-pointer"
+                                      value={hslStringToHex(field.value || '')}
+                                      onChange={(e) => field.onChange(hexToHslString(e.target.value))}
+                                    />
                                 </FormControl>
-                                <div className="w-8 h-8 flex-shrink-0 rounded-md border" style={{ backgroundColor: `hsl(${field.value})` }} />
+                                <span className="font-mono text-sm text-muted-foreground">
+                                    {hslStringToHex(field.value || '')}
+                                </span>
                             </div>
                             <p className="text-xs text-muted-foreground">{description}</p>
                             <FormMessage />
@@ -199,9 +280,32 @@ export default function AppearanceForm() {
             </CardContent>
         </Card>
 
-        <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
-          {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري الحفظ...</> : 'حفظ التغييرات'}
-        </Button>
+        <div className="flex items-center gap-4">
+            <Button type="submit" disabled={isSubmitting || !form.formState.isDirty}>
+              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري الحفظ...</> : 'حفظ التغييرات'}
+            </Button>
+
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button type="button" variant="destructive" disabled={isSubmitting}>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        العودة إلى القيم الافتراضية
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            سيؤدي هذا الإجراء إلى حذف جميع تخصيصات المظهر والعودة إلى الألوان والخطوط الافتراضية. لا يمكن التراجع عن هذا الإجراء.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleResetToDefaults}>نعم، قم بإعادة التعيين</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
       </form>
     </Form>
   );
