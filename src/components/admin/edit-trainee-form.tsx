@@ -30,6 +30,8 @@ interface Trainee {
     lastNameAr: string;
     firstNameEn: string;
     lastNameEn: string;
+    dateOfBirth?: string;
+    placeOfBirth?: string;
     phone: string;
     email?: string;
     licenseType: string;
@@ -45,6 +47,8 @@ const formSchema = z.object({
   lastNameAr: z.string().min(2, 'اسم العائلة (بالعربية) مطلوب'),
   firstNameEn: z.string().min(2, 'الاسم الأول (باللاتينية) مطلوب'),
   lastNameEn: z.string().min(2, 'اسم العائلة (باللاتينية) مطلوب'),
+  dateOfBirth: z.string({ required_error: "تاريخ الميلاد مطلوب." }).min(1, "تاريخ الميلاد مطلوب."),
+  placeOfBirth: z.string({ required_error: "مكان الميلاد مطلوب." }).min(2, "مكان الميلاد مطلوب."),
   licenseType: z.string().min(1, "نوع الرخصة مطلوب"),
   status: z.enum(['في الانتظار', 'مؤكد', 'مكتمل', 'ملغي']).default('في الانتظار'),
   examType: z.string().optional(),
@@ -82,6 +86,8 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
         lastNameAr: '',
         firstNameEn: '',
         lastNameEn: '',
+        dateOfBirth: '',
+        placeOfBirth: '',
         licenseType: '',
         status: 'في الانتظار',
         examType: 'NONE',
@@ -97,6 +103,8 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
         lastNameAr: trainee.lastNameAr || '',
         firstNameEn: trainee.firstNameEn || '',
         lastNameEn: trainee.lastNameEn || '',
+        dateOfBirth: trainee.dateOfBirth || '',
+        placeOfBirth: trainee.placeOfBirth || '',
         licenseType: trainee.licenseType || '',
         status: trainee.status || 'في الانتظار',
         examType: trainee.examType || 'NONE',
@@ -146,6 +154,10 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
         <div className="grid grid-cols-2 gap-4">
           <FormField control={form.control} name="firstNameEn" render={({ field }) => (<FormItem><FormLabel>الاسم الأول (لاتيني)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="lastNameEn" render={({ field }) => (<FormItem><FormLabel>اسم العائلة (لاتيني)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+        </div>
+         <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="dateOfBirth" render={({ field }) => (<FormItem><FormLabel>تاريخ الميلاد</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField control={form.control} name="placeOfBirth" render={({ field }) => (<FormItem><FormLabel>مكان الميلاد</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
         </div>
         
         <FormItem>

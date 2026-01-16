@@ -31,6 +31,8 @@ const formSchema = z.object({
   lastNameAr: z.string().min(2, { message: "اسم العائلة (بالعربية) مطلوب." }),
   firstNameEn: z.string().min(2, { message: "الاسم الأول (باللاتينية) مطلوب." }),
   lastNameEn: z.string().min(2, { message: "اسم العائلة (باللاتينية) مطلوب." }),
+  dateOfBirth: z.string({ required_error: "تاريخ الميلاد مطلوب." }).min(1, "تاريخ الميلاد مطلوب."),
+  placeOfBirth: z.string({ required_error: "مكان الميلاد مطلوب." }).min(2, "مكان الميلاد مطلوب."),
   licenseType: z.string({ required_error: "نوع الرخصة إجباري." }),
   phone: z.string().min(9, { message: "يرجى إدخال رقم هاتف صالح." }),
   password: z.string().min(8, { message: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
@@ -66,6 +68,8 @@ export default function RegistrationForm() {
             lastNameAr: "",
             firstNameEn: "",
             lastNameEn: "",
+            dateOfBirth: "",
+            placeOfBirth: "",
             phone: "",
             password: "",
             confirmPassword: "",
@@ -92,6 +96,8 @@ export default function RegistrationForm() {
                 lastNameAr: values.lastNameAr,
                 firstNameEn: values.firstNameEn,
                 lastNameEn: values.lastNameEn,
+                dateOfBirth: values.dateOfBirth,
+                placeOfBirth: values.placeOfBirth,
                 phone: values.phone,
                 email: emailForAuth,
                 licenseType: values.licenseType,
@@ -148,6 +154,15 @@ export default function RegistrationForm() {
                             <FormItem><FormLabel>اسم العائلة (باللاتينية)</FormLabel><FormControl><Input placeholder="Mansouri" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                     <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
+                        <FormItem><FormLabel>تاريخ الميلاد</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="placeOfBirth" render={({ field }) => (
+                        <FormItem><FormLabel>مكان الميلاد</FormLabel><FormControl><Input placeholder="مثال: الجزائر العاصمة" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
                 </div>
                 
                 <FormField control={form.control} name="phone" render={({ field }) => (

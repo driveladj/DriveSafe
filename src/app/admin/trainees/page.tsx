@@ -48,6 +48,7 @@ interface Exam { id: string; name: string; order: number; }
 interface Trainee {
     uid: string; firstNameAr: string; lastNameAr: string; firstNameEn: string;
     lastNameEn: string; phone: string; email?: string; licenseType: string;
+    dateOfBirth?: string; placeOfBirth?: string;
     examType?: string; createdAt: Timestamp; status?: 'مؤكد' | 'في الانتظار' | 'مكتمل' | 'ملغي';
     totalAmount?: number;
     paidAmount?: number;

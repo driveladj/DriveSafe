@@ -7,19 +7,22 @@ import { useAuth } from '@/hooks/use-auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, User, Phone, Mail, Calendar, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import TraineeExamsTracker from '@/components/admin/TraineeExamsTracker';
 
-// Dummy type, will be expanded later
 interface Trainee {
     uid: string;
-    firstName: string;
-    lastName: string;
+    firstNameAr: string;
+    lastNameAr: string;
+    firstNameEn: string;
+    lastNameEn: string;
     email: string;
+    phone: string;
+    dateOfBirth?: string;
+    placeOfBirth?: string;
     licenseType?: string;
-    // add other fields as necessary
 }
 
 export default function TraineeDetailPage() {
@@ -48,7 +51,6 @@ export default function TraineeDetailPage() {
                     setTrainee({ uid: traineeSnap.id, ...traineeSnap.data() } as Trainee);
                 } else {
                     console.error("No such trainee!");
-                    // Optionally, redirect to a not-found page or back to the list
                     router.push('/admin/trainees');
                 }
                 setLoadingTrainee(false);
@@ -81,20 +83,33 @@ export default function TraineeDetailPage() {
                 <h1 className="text-3xl font-bold tracking-tight">ملف المتدرب</h1>
             </div>
 
-            <div className="flex items-center gap-6 p-6 bg-card rounded-lg border mb-8">
-                 <Avatar className="h-20 w-20 border-2 border-primary">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${trainee.firstName} ${trainee.lastName}`} />
-                    <AvatarFallback className="text-2xl font-bold">{getInitials(trainee.firstName, trainee.lastName)}</AvatarFallback>
-                </Avatar>
-                <div>
-                    <h2 className="text-2xl font-semibold">{trainee.firstName} {trainee.lastName}</h2>
-                    <p className="text-muted-foreground">{trainee.email}</p>
-                    {trainee.licenseType && <p className="text-sm text-muted-foreground">الدورة: {trainee.licenseType}</p>}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="flex flex-col items-center p-6 bg-card rounded-lg border">
+                         <Avatar className="h-24 w-24 border-2 border-primary">
+                            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${trainee.firstNameAr} ${trainee.lastNameAr}`} />
+                            <AvatarFallback className="text-3xl font-bold">{getInitials(trainee.firstNameAr, trainee.lastNameAr)}</AvatarFallback>
+                        </Avatar>
+                        <div className="text-center mt-4">
+                            <h2 className="text-2xl font-semibold">{trainee.firstNameAr} {trainee.lastNameAr}</h2>
+                            <p className="text-muted-foreground">{trainee.firstNameEn} {trainee.lastNameEn}</p>
+                            {trainee.licenseType && <p className="text-sm font-medium text-primary mt-1">الدورة: {trainee.licenseType}</p>}
+                        </div>
+                    </div>
+                     <div className="p-6 bg-card rounded-lg border space-y-4">
+                        <h3 className="font-semibold text-lg">المعلومات الشخصية</h3>
+                        <div className="flex items-center gap-3"><Calendar className="w-4 h-4 text-muted-foreground" /> <span className="text-sm">تاريخ الميلاد: {trainee.dateOfBirth || 'لم يحدد'}</span></div>
+                        <div className="flex items-center gap-3"><MapPin className="w-4 h-4 text-muted-foreground" /> <span className="text-sm">مكان الميلاد: {trainee.placeOfBirth || 'لم يحدد'}</span></div>
+                        <h3 className="font-semibold text-lg pt-4 border-t">معلومات الاتصال</h3>
+                        <div className="flex items-center gap-3"><Phone className="w-4 h-4 text-muted-foreground" /> <span className="text-sm">{trainee.phone}</span></div>
+                        <div className="flex items-center gap-3"><Mail className="w-4 h-4 text-muted-foreground" /> <span className="text-sm">{trainee.email}</span></div>
+                     </div>
+                </div>
+
+                <div className="lg:col-span-2">
+                    <TraineeExamsTracker traineeId={traineeId} />
                 </div>
             </div>
-
-            {/* Exam progress section will be added here in the next steps */}
-            <TraineeExamsTracker traineeId={traineeId} />
 
         </div>
     );

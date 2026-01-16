@@ -37,6 +37,8 @@ const formSchema = z.object({
   lastNameAr: z.string().min(2, 'اسم العائلة (بالعربية) مطلوب'),
   firstNameEn: z.string().min(2, 'الاسم الأول (باللاتينية) مطلوب'),
   lastNameEn: z.string().min(2, 'اسم العائلة (باللاتينية) مطلوب'),
+  dateOfBirth: z.string({ required_error: "تاريخ الميلاد مطلوب." }).min(1, "تاريخ الميلاد مطلوب."),
+  placeOfBirth: z.string({ required_error: "مكان الميلاد مطلوب." }).min(2, "مكان الميلاد مطلوب."),
   phone: z.string().min(10, 'رقم الهاتف إجباري ويستخدم لتسجيل الدخول'),
   email: z.string().email('بريد إلكتروني غير صالح').optional().or(z.literal('')),
   password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
@@ -72,7 +74,7 @@ export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogPro
 
     if (open) {
         fetchCategories();
-        form.reset({ firstNameAr: '', lastNameAr: '', firstNameEn: '', lastNameEn: '', phone: '', email: '', password: '', licenseType: undefined });
+        form.reset({ firstNameAr: '', lastNameAr: '', firstNameEn: '', lastNameEn: '', dateOfBirth: '', placeOfBirth: '', phone: '', email: '', password: '', licenseType: undefined });
     }
   }, [open, form]);
 
@@ -99,7 +101,7 @@ export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button><PlusCircle className="w-4 h-4 mr-2" />إضافة متدرب جديد</Button></DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>إنشاء حساب متدرب جديد</DialogTitle>
           <DialogDescription>يتم استخدام رقم الهاتف وكلمة المرور لتسجيل الدخول.</DialogDescription>
@@ -113,6 +115,10 @@ export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogPro
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="firstNameEn" render={({ field }) => (<FormItem><FormLabel>الاسم الأول (لاتيني)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="lastNameEn" render={({ field }) => (<FormItem><FormLabel>اسم العائلة (لاتيني)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            </div>
+             <div className="grid grid-cols-2 gap-4">
+               <FormField control={form.control} name="dateOfBirth" render={({ field }) => (<FormItem><FormLabel>تاريخ الميلاد</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>)} />
+               <FormField control={form.control} name="placeOfBirth" render={({ field }) => (<FormItem><FormLabel>مكان الميلاد</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
             </div>
             <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>رقم الهاتف (لتسجيل الدخول)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
             <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>كلمة المرور</FormLabel><FormControl><Input {...field} type="password" /></FormControl><FormMessage /></FormItem>)} />

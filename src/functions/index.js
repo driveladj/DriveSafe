@@ -27,13 +27,15 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
     lastNameAr,
     firstNameEn,
     lastNameEn,
+    dateOfBirth,
+    placeOfBirth,
     licenseType,
     email, // Optional
   } = data;
 
   // Phone number and password are now the critical fields for auth creation
-  if (!phone || !password || !firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn) {
-    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number, password and names are mandatory.");
+  if (!phone || !password || !firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !licenseType || !dateOfBirth || !placeOfBirth) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number, password, names, license type, date and place of birth are mandatory.");
   }
 
   // 3. Prepare the payload for Firebase Auth creation
@@ -61,9 +63,11 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
       lastNameAr,
       firstNameEn,
       lastNameEn,
+      dateOfBirth,
+      placeOfBirth,
       phone: phone, // Mandatory phone number
       email: email || "", // Optional email
-      licenseType: licenseType || 'لم يحدد',
+      licenseType,
       role: "user",
       status: "مؤكد",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
