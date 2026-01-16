@@ -58,6 +58,7 @@ const availableFonts = [
     { value: 'Tajawal', label: 'Tajawal (النصوص الافتراضي)' },
     { value: 'Almarai', label: 'Almarai' },
     { value: 'Readex Pro', label: 'Readex Pro' },
+    { value: 'Amiri', label: 'Amiri' },
 ];
 
 export default function AppearanceForm() {
