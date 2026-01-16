@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -175,8 +176,11 @@ export default function AppearanceForm() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
                  {colorFields.map(({ name, label, description }) => (
-                    <FormField key={name} control={form.control} name={name}>
-                        {({ field }) => (
+                    <FormField
+                      key={name}
+                      control={form.control}
+                      name={name}
+                      render={({ field }) => (
                         <FormItem>
                             <FormLabel>{label}</FormLabel>
                             <div className="flex items-center gap-2">
@@ -188,8 +192,8 @@ export default function AppearanceForm() {
                             <p className="text-xs text-muted-foreground">{description}</p>
                             <FormMessage />
                         </FormItem>
-                        )}
-                    </FormField>
+                      )}
+                    />
                  ))}
             </CardContent>
         </Card>
