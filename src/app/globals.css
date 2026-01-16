@@ -25,9 +25,8 @@
     --ring: 174 63% 37%;
     --radius: 0.5rem;
 
-    --edit-mode: 47 98% 61%; /* Vivid yellow */
-    --edit-mode-foreground: 47 98% 10%;
-    --edit-mode-border: 47 98% 71%;
+    --font-headline: 'Cairo', sans-serif;
+    --font-body: 'Tajawal', sans-serif;
   }
 
   .dark {
@@ -50,10 +49,6 @@
     --border: 210 31% 25%;
     --input: 210 31% 25%;
     --ring: 174 63% 45%;
-
-    --edit-mode: 47 98% 51%; /* Slightly darker yellow for dark mode */
-    --edit-mode-foreground: 47 98% 10%;
-    --edit-mode-border: 47 98% 61%;
   }
 }
 

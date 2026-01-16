@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { Bell, Home, LineChart, Package, Package2, Settings, ShoppingCart, Users, FileText, ChevronRight, ChevronLeft, TrafficCone, ListTree, BookOpen, DollarSign } from 'lucide-react';
+import { Bell, Home, LineChart, Package, Package2, Settings, ShoppingCart, Users, FileText, ChevronRight, ChevronLeft, TrafficCone, ListTree, BookOpen, DollarSign, Palette } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,13 @@ const AdminSidebar = () => (
                         >
                            <ChevronLeft className="h-4 w-4" />
                             تذييل الصفحة
+                        </Link>
+                         <Link
+                            href="/admin/appearance"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        >
+                           <Palette className="h-4 w-4" />
+                            المظهر
                         </Link>
                     </div>
                      <div className="px-3 py-2">
