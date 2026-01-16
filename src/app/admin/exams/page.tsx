@@ -19,10 +19,11 @@ import AddExamDialog from '@/components/admin/add-exam-dialog';
 import DeleteExamAlert from '@/components/admin/delete-exam-alert';
 import EditExamDialog from '@/components/admin/edit-exam-dialog';
 
-// Interface for Exam Type
-export interface ExamType {
+// Interface for Exam Type - NOW INCLUDES ORDER
+export interface Exam {
     id: string;
     name: string;
+    order: number;
     [key: string]: any; // To allow for other properties if any
 }
 
@@ -31,24 +32,25 @@ export default function ExamsPage() {
     const { toast } = useToast();
 
     // State
-    const [examTypes, setExamTypes] = useState<ExamType[]>([]);
+    const [exams, setExams] = useState<Exam[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [examToDelete, setExamToDelete] = useState<ExamType | null>(null);
+    const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [examToEdit, setExamToEdit] = useState<ExamType | null>(null);
+    const [examToEdit, setExamToEdit] = useState<Exam | null>(null);
 
 
     // Data Fetching
     const fetchExams = async () => {
         setLoading(true);
         try {
-            const examsQuery = query(collection(db, 'examTypes'), orderBy('name', 'asc'));
+            // UPDATED: query 'exams' collection and order by 'order'
+            const examsQuery = query(collection(db, 'exams'), orderBy('order', 'asc'));
             const querySnapshot = await getDocs(examsQuery);
-            const examsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ExamType));
-            setExamTypes(examsList);
+            const examsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Exam));
+            setExams(examsList);
         } catch (error) {
-            console.error("Error fetching exam types:", error);
+            console.error("Error fetching exams:", error);
             toast({ title: "خطأ", description: "فشل تحميل بيانات الامتحانات.", variant: "destructive" });
         } finally {
             setLoading(false);
@@ -60,12 +62,12 @@ export default function ExamsPage() {
     }, []);
 
     // Handlers
-    const handleDeleteClick = (exam: ExamType) => {
+    const handleDeleteClick = (exam: Exam) => {
         setExamToDelete(exam);
         setIsDeleteDialogOpen(true);
     };
     
-    const handleEditClick = (exam: ExamType) => {
+    const handleEditClick = (exam: Exam) => {
         setExamToEdit(exam);
         setIsEditDialogOpen(true);
     };
@@ -79,8 +81,8 @@ export default function ExamsPage() {
             <Card className="m-4">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>إدارة الامتحانات</CardTitle>
-                        <CardDescription>إضافة وتعديل وحذف أنواع الامتحانات.</CardDescription>
+                        <CardTitle>إدارة مسار الامتحانات</CardTitle>
+                        <CardDescription>إضافة وتعديل وحذف الامتحانات التسلسلية للمتدربين.</CardDescription>
                     </div>
                     <AddExamDialog onExamAdded={fetchExams} />
                 </CardHeader>
@@ -88,13 +90,18 @@ export default function ExamsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[80%]">اسم الامتحان</TableHead>
+                                {/* ADDED: Order column */}
+                                <TableHead className="w-[100px]">الترتيب</TableHead>
+                                <TableHead>اسم الامتحان</TableHead>
                                 <TableHead className="text-right">إجراءات</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {examTypes.map((exam) => (
+                            {/* UPDATED: map over 'exams' */}
+                            {exams.map((exam) => (
                                 <TableRow key={exam.id}>
+                                    {/* ADDED: Order cell */}
+                                    <TableCell className="font-bold">{exam.order}</TableCell>
                                     <TableCell className="font-medium">{exam.name}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
@@ -112,9 +119,9 @@ export default function ExamsPage() {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                            {examTypes.length === 0 && (
+                            {exams.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={2} className="h-24 text-center">لم يتم إضافة أي امتحانات بعد.</TableCell>
+                                    <TableCell colSpan={3} className="h-24 text-center">لم يتم إضافة أي امتحانات بعد.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

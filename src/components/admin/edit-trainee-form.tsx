@@ -23,7 +23,7 @@ import { db } from '@/lib/firebase';
 
 // Interfaces
 interface LicenseCategory { id: string; name: string; }
-interface ExamType { id: string; name: string; }
+interface Exam { id: string; name: string; order: number; }
 interface Trainee {
     uid: string;
     firstNameAr: string;
@@ -66,12 +66,12 @@ const formSchema = z.object({
 type EditTraineeFormProps = {
   trainee: Trainee;
   licenseCategories: LicenseCategory[];
-  examTypes: ExamType[];
+  exams: Exam[];
   onFormSubmit: () => void;
   onCancel: () => void;
 };
 
-export default function EditTraineeForm({ trainee, licenseCategories, examTypes, onFormSubmit, onCancel }: EditTraineeFormProps) {
+export default function EditTraineeForm({ trainee, licenseCategories, exams, onFormSubmit, onCancel }: EditTraineeFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -172,7 +172,7 @@ export default function EditTraineeForm({ trainee, licenseCategories, examTypes,
                     <FormControl><SelectTrigger><SelectValue placeholder="اختر نوع الامتحان..." /></SelectTrigger></FormControl>
                     <SelectContent>
                         <SelectItem value="NONE"><em>لا يوجد</em></SelectItem>
-                        {examTypes.map(exam => <SelectItem key={exam.id} value={exam.name}>{exam.name}</SelectItem>)}
+                        {exams.map(exam => <SelectItem key={exam.id} value={exam.name}>{exam.name}</SelectItem>)}
                     </SelectContent>
                 </Select>
             <FormMessage /></FormItem>
@@ -194,14 +194,14 @@ export default function EditTraineeForm({ trainee, licenseCategories, examTypes,
 
         <div className="grid grid-cols-2 gap-4 border-t pt-4 mt-4">
             <FormField control={form.control} name="totalAmount" render={({ field }) => (
-                <FormItem><FormLabel>المبلغ الإجمالي (د.ل)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>المبلغ الإجمالي (د.ج)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="paidAmount" render={({ field }) => (
-                <FormItem><FormLabel>المبلغ المدفوع (د.ل)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>المبلغ المدفوع (د.ج)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
         </div>
          <div className="p-3 bg-muted/50 rounded-md text-center">
-            <p className="text-sm font-medium">المبلغ المتبقي: <span className="font-bold text-lg">{remainingAmount.toFixed(2)}</span> د.ل</p>
+            <p className="text-sm font-medium">المبلغ المتبقي: <span className="font-bold text-lg">{remainingAmount.toFixed(2)}</span> د.ج</p>
         </div>
         
         <div className="flex justify-end gap-2 pt-4">

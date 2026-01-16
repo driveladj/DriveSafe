@@ -31,6 +31,7 @@ import { db } from '@/lib/firebase';
 // Zod Schema for validation
 const formSchema = z.object({
   name: z.string().min(3, { message: 'اسم الامتحان يجب أن يكون 3 أحرف على الأقل.' }),
+  order: z.coerce.number().min(0, { message: 'الترتيب يجب أن يكون رقمًا موجبًا.' }),
 });
 
 // Component Props
@@ -47,24 +48,26 @@ export default function AddExamDialog({ onExamAdded }: AddExamDialogProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      order: 0,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const docRef = await addDoc(collection(db, 'examTypes'), {
+      const docRef = await addDoc(collection(db, 'exams'), {
         name: values.name,
+        order: values.order,
       });
       toast({ title: 'تمت الإضافة!', description: `تمت إضافة امتحان "${values.name}" بنجاح.` });
       form.reset();
       setOpen(false);
       onExamAdded(); // Callback to refresh the parent component's data
     } catch (error) {
-      console.error("Error adding exam type: ", error);
+      console.error("Error adding exam: ", error);
       toast({
         title: 'خطأ',
-        description: 'فشل إضافة نوع الامتحان. الرجاء المحاولة مرة أخرى.',
+        description: 'فشل إضافة الامتحان. الرجاء المحاولة مرة أخرى.',
         variant: 'destructive',
       });
     } finally {
@@ -82,9 +85,9 @@ export default function AddExamDialog({ onExamAdded }: AddExamDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>إضافة نوع امتحان جديد</DialogTitle>
+          <DialogTitle>إضافة امتحان جديد للمسار التعليمي</DialogTitle>
           <DialogDescription>
-            أدخل اسمًا واضحًا للامتحان. سيظهر هذا الاسم للمدربين والمتدربين.
+            أدخل اسمًا وترتيبًا للامتحان. سيظهر هذا في مسار تقدم الطالب.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -97,6 +100,19 @@ export default function AddExamDialog({ onExamAdded }: AddExamDialogProps) {
                   <FormLabel>اسم الامتحان</FormLabel>
                   <FormControl>
                     <Input placeholder="مثال: امتحان الكود النظري" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>الترتيب</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

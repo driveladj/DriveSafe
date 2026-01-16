@@ -32,11 +32,11 @@ export default function DeleteExamAlert({ isOpen, setIsOpen, examId, examName, o
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            await deleteDoc(doc(db, 'examTypes', examId));
+            await deleteDoc(doc(db, 'exams', examId));
             toast({ title: "تم الحذف", description: `تم حذف امتحان "${examName}" بنجاح.` });
             onExamDeleted();
         } catch (error) {
-            console.error("Error deleting exam type: ", error);
+            console.error("Error deleting exam: ", error);
             toast({ title: "خطأ", description: "فشل حذف الامتحان.", variant: "destructive" });
         } finally {
             setIsDeleting(false);
@@ -50,7 +50,7 @@ export default function DeleteExamAlert({ isOpen, setIsOpen, examId, examName, o
                 <AlertDialogHeader>
                     <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
                     <AlertDialogDescription>
-                        هذا الإجراء سيحذف نوع الامتحان <span className="font-bold">{examName}</span> بشكل دائم. لا يمكن التراجع عن هذا الإجراء.
+                        هذا الإجراء سيحذف الامتحان <span className="font-bold">{examName}</span> بشكل دائم. لا يمكن التراجع عن هذا الإجراء.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

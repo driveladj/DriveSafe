@@ -44,7 +44,7 @@ import { Input } from '@/components/ui/input';
 
 // Interfaces & Types
 interface LicenseCategory { id: string; name: string; }
-interface ExamType { id: string; name: string; }
+interface Exam { id: string; name: string; order: number; }
 interface Trainee {
     uid: string; firstNameAr: string; lastNameAr: string; firstNameEn: string;
     lastNameEn: string; phone: string; email?: string; licenseType: string;
@@ -61,7 +61,7 @@ export default function TraineesPage() {
 
     const [allTrainees, setAllTrainees] = useState<Trainee[]>([]);
     const [licenseCategories, setLicenseCategories] = useState<LicenseCategory[]>([]);
-    const [examTypes, setExamTypes] = useState<ExamType[]>([]);
+    const [exams, setExams] = useState<Exam[]>([]);
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [licenseFilter, setLicenseFilter] = useState('all');
@@ -92,11 +92,11 @@ export default function TraineesPage() {
             const [traineesSnap, categoriesSnap, examsSnap] = await Promise.all([
                 getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'))),
                 getDocs(query(collection(db, 'licenseCategories'), orderBy('name', 'asc'))),
-                getDocs(query(collection(db, 'examTypes'), orderBy('name', 'asc')))
+                getDocs(query(collection(db, 'exams'), orderBy('order', 'asc')))
             ]);
             setAllTrainees(traineesSnap.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Trainee)));
             setLicenseCategories(categoriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as LicenseCategory)));
-            setExamTypes(examsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as ExamType)));
+            setExams(examsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Exam)));
         } catch (error) {
             console.error("Error fetching data:", error);
             toast({ title: "خطأ", description: "فشل تحميل البيانات.", variant: "destructive" });
@@ -138,7 +138,7 @@ export default function TraineesPage() {
         let filters = [];
         if (licenseFilter !== 'all') filters.push(`الرخصة: ${licenseFilter}`);
         if (examFilter !== 'all') {
-            const examName = examFilter === '__NONE__' ? 'لم يحدد' : examTypes.find(e => e.name === examFilter)?.name || examFilter;
+            const examName = examFilter === '__NONE__' ? 'لم يحدد' : exams.find(e => e.name === examFilter)?.name || examFilter;
             filters.push(`الامتحان: ${examName}`);
         }
         if (statusFilter !== 'all') filters.push(`الحالة: ${statusFilter}`);
@@ -287,7 +287,7 @@ export default function TraineesPage() {
                       <div className="mb-6 p-4 border rounded-lg bg-muted/50">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <Select value={licenseFilter} onValueChange={setLicenseFilter}><SelectTrigger><SelectValue placeholder="فلترة حسب الرخصة" /></SelectTrigger><SelectContent><SelectItem value="all">كل الرخص</SelectItem>{licenseCategories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent></Select>
-                              <Select value={examFilter} onValueChange={setExamFilter}><SelectTrigger><SelectValue placeholder="فلترة حسب الامتحان" /></SelectTrigger><SelectContent><SelectItem value="all">كل الامتحانات</SelectItem>{examTypes.map(exam => <SelectItem key={exam.id} value={exam.name}>{exam.name}</SelectItem>)}<SelectItem value="__NONE__">لم يحدد</SelectItem></SelectContent></Select>
+                              <Select value={examFilter} onValueChange={setExamFilter}><SelectTrigger><SelectValue placeholder="فلترة حسب الامتحان" /></SelectTrigger><SelectContent><SelectItem value="all">كل الامتحانات</SelectItem>{exams.map(exam => <SelectItem key={exam.id} value={exam.name}>{exam.name}</SelectItem>)}<SelectItem value="__NONE__">لم يحدد</SelectItem></SelectContent></Select>
                               <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger><SelectValue placeholder="فلترة حسب الحالة" /></SelectTrigger><SelectContent><SelectItem value="all">كل الحالات</SelectItem><SelectItem value="في الانتظار">في الانتظار</SelectItem><SelectItem value="مؤكد">مؤكد</SelectItem><SelectItem value="مكتمل">مكتمل</SelectItem><SelectItem value="ملغي">ملغي</SelectItem></SelectContent></Select>
                               <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="ابحث بالاسم أو الهاتف..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
                           </div>
@@ -331,7 +331,7 @@ export default function TraineesPage() {
                   onOpenChange={setIsPrintHeaderDialogOpen} 
                   onSave={handleSaveHeaderAndPrint}
               />
-              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}><DialogContent><DialogHeader><DialogTitle>تعديل بيانات المتدرب</DialogTitle><DialogDescription>أجرِ التغييرات اللازمة واحفظها.</DialogDescription></DialogHeader>{selectedTrainee && <EditTraineeForm trainee={selectedTrainee} licenseCategories={licenseCategories} examTypes={examTypes} onFormSubmit={handleFormSubmit} onCancel={() => setIsEditDialogOpen(false)} />}</DialogContent></Dialog>
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}><DialogContent><DialogHeader><DialogTitle>تعديل بيانات المتدرب</DialogTitle><DialogDescription>أجرِ التغييرات اللازمة واحفظها.</DialogDescription></DialogHeader>{selectedTrainee && <EditTraineeForm trainee={selectedTrainee} licenseCategories={licenseCategories} exams={exams} onFormSubmit={handleFormSubmit} onCancel={() => setIsEditDialogOpen(false)} />}</DialogContent></Dialog>
               <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle><AlertDialogDescription>هذا الإجراء سيحذف سجل بيانات المتدرب بشكل دائم.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>إلغاء</AlertDialogCancel><AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
             </div>
         </>

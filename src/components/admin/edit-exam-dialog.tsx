@@ -26,18 +26,19 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { ExamType } from '@/app/admin/exams/page'; // Import the interface
+import { Exam } from '@/app/admin/exams/page'; // Import the new interface
 
 // Zod Schema for validation
 const formSchema = z.object({
   name: z.string().min(3, { message: 'اسم الامتحان يجب أن يكون 3 أحرف على الأقل.' }),
+  order: z.coerce.number().min(0, { message: 'الترتيب يجب أن يكون رقمًا موجبًا.' }),
 });
 
 // Component Props
 interface EditExamDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  exam: ExamType;
+  exam: Exam;
   onExamUpdated: () => void;
 }
 
@@ -48,29 +49,31 @@ export default function EditExamDialog({ isOpen, setIsOpen, exam, onExamUpdated 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ''
+      name: '',
+      order: 0,
     },
   });
 
-  // When the dialog opens, reset the form with the current exam's name
+  // When the dialog opens, reset the form with the current exam's data
   useEffect(() => {
     if (isOpen) {
-      form.reset({ name: exam.name });
+      form.reset({ name: exam.name, order: exam.order });
     }
   }, [isOpen, exam, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    const examRef = doc(db, 'examTypes', exam.id);
+    const examRef = doc(db, 'exams', exam.id);
 
     try {
       await updateDoc(examRef, {
         name: values.name,
+        order: values.order,
       });
       toast({ title: 'تم التحديث!', description: `تم تحديث الامتحان بنجاح.` });
       onExamUpdated();
     } catch (error) {
-      console.error("Error updating exam type: ", error);
+      console.error("Error updating exam: ", error);
       toast({
         title: 'خطأ',
         description: 'فشل تحديث الامتحان. الرجاء المحاولة مرة أخرى.',
@@ -86,9 +89,9 @@ export default function EditExamDialog({ isOpen, setIsOpen, exam, onExamUpdated 
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>تعديل اسم الامتحان</DialogTitle>
+          <DialogTitle>تعديل الامتحان</DialogTitle>
           <DialogDescription>
-            أدخل الاسم الجديد للامتحان. سيتم تحديثه في كل مكان يُستخدم فيه.
+            أدخل الاسم والترتيب الجديدين للامتحان.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -101,6 +104,19 @@ export default function EditExamDialog({ isOpen, setIsOpen, exam, onExamUpdated 
                   <FormLabel>اسم الامتحان</FormLabel>
                   <FormControl>
                     <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>الترتيب</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
