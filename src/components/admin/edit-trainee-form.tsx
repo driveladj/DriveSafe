@@ -81,7 +81,19 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+        firstNameAr: trainee.firstNameAr || '',
+        lastNameAr: trainee.lastNameAr || '',
+        firstNameEn: trainee.firstNameEn || '',
+        lastNameEn: trainee.lastNameEn || '',
+        dateOfBirth: trainee.dateOfBirth || '',
+        placeOfBirth: trainee.placeOfBirth || '',
+        licenseType: trainee.licenseType || '',
+        status: trainee.status || 'في الانتظار',
+        examType: trainee.examType || 'NONE',
+        totalAmount: trainee.totalAmount || 0,
+        paidAmount: trainee.paidAmount || 0,
+    },
   });
 
   useEffect(() => {
@@ -212,5 +224,3 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
     </Form>
   );
 }
-
-    
