@@ -1,17 +1,24 @@
+
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow read and write access to the 'owner' folder for any authenticated user.
-    // The admin UI is the gatekeeper for who can upload.
-    match /owner/{allPaths=**} {
-      allow read, write: if request.auth != null;
+    
+    // Function to check if the user is an admin based on custom claims
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role == 'admin';
     }
 
-    // Allow read and write access to the 'trafficSigns' folder for any authenticated user.
-    // The admin UI is the gatekeeper for who can upload.
+    // Owner image can be read by anyone, but only written by an admin.
+    match /owner/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Traffic sign images can be read by anyone, but only written by an admin.
     match /trafficSigns/{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }
