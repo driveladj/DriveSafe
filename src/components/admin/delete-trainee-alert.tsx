@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -19,29 +18,29 @@ import { Loader2, Trash2 } from 'lucide-react';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface DeleteCourseAlertProps {
-    courseId: string;
-    courseName: string;
-    onCourseDeleted: () => void;
+interface DeleteTraineeAlertProps {
+    traineeId: string;
+    traineeName: string;
+    onTraineeDeleted: () => void;
 }
 
-export default function DeleteCourseAlert({ courseId, courseName, onCourseDeleted }: DeleteCourseAlertProps) {
+export default function DeleteTraineeAlert({ traineeId, traineeName, onTraineeDeleted }: DeleteTraineeAlertProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const { toast } = useToast();
 
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const courseRef = doc(db, 'courses', courseId);
-            await deleteDoc(courseRef);
+            const traineeRef = doc(db, 'users', traineeId);
+            await deleteDoc(traineeRef);
             
-            toast({ title: "تم الحذف!", description: `تم حذف دورة \"${courseName}\" بنجاح.` });
-            onCourseDeleted();
+            toast({ title: "تم الحذف!", description: `تم حذف المتدرب \"${traineeName}\" بنجاح.` });
+            onTraineeDeleted(); // Callback to refresh the list
         } catch (error) {
-            console.error("Error deleting course: ", error);
-            toast({ title: "خطأ", description: "فشل حذف الدورة.", variant: "destructive" });
+            console.error("Error deleting trainee: ", error);
+            toast({ title: "خطأ", description: "فشل حذف المتدرب.", variant: "destructive" });
         } finally {
-           // No need to set isDeleting to false if the component unmounts
+            setIsDeleting(false);
         }
     };
 
@@ -50,21 +49,22 @@ export default function DeleteCourseAlert({ courseId, courseName, onCourseDelete
             <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="icon">
                     <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">حذف</span>
+                    <span className="sr-only">Delete</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
                     <AlertDialogDescription>
-                        هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف دورة <span className="font-bold">{courseName}</span> بشكل دائم.
+                        هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف المتدرب
+                        <span className="font-bold"> {traineeName}</span> بشكل دائم من قاعدة البيانات.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>إلغاء</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} 
-                        نعم، قم بالحذف
+                        متابعة
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

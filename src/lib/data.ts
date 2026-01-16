@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from "lucide-react";
-import { Award, Car, Check, HeartHandshake, Bike, Presentation, Smile, Star, Users, Book } from "lucide-react";
+import { Car, Bike, Presentation, Book } from "lucide-react";
 
 export const navItems = [
     { href: '/', label: 'الرئيسية' },
@@ -13,40 +13,50 @@ export const navItems = [
     { href: '/contact', label: 'اتصل بنا' },
 ];
 
-export const features = [
-    {
-        Icon: Award,
-        title: "مدربون معتمدون",
-        description: "مدربونا معتمدون من الحكومة، ذوو خبرة، ومكرسون لنجاحك.",
-    },
-    {
-        Icon: Star,
-        title: "معدل نجاح مرتفع",
-        description: "نفخر بمعدل نجاح مرتفع، بفضل طرق التدريس الفعالة لدينا.",
-    },
-    {
-        Icon: Car,
-        title: "مركبات حديثة",
-        description: "تعلم القيادة في أسطول من المركبات الجديدة والآمنة والمزودة بتحكم مزدوج.",
-    },
-    {
-        Icon: Users,
-        title: "تدريب شخصي",
-        description: "نقوم بتصميم دروسنا لتناسب وتيرة تعلمك واحتياجاتك الفردية لتحقيق نتائج أفضل.",
-    },
-];
-
-export type Course = {
+export type Feature = {
     id: string;
-    name: string;
+    title: string;
     description: string;
-    details: string;
-    Icon: LucideIcon;
-    image: {
-        imageUrl: string;
-        imageHint: string;
-    } | undefined;
-}
+    icon: string;
+    order: number;
+};
+
+// Defines the basic license category (e.g., Class B)
+export type LicenseCategory = {
+  id: string;
+  name: string;
+  description?: string; // Optional short description
+  createdAt?: any; // Firestore Timestamp
+};
+
+// Defines a training course that belongs to a specific license category
+export type Course = {
+    id:string;
+    name: string;
+    description?: string;
+    details?: string;
+    categoryId: string; // ID from LicenseCategory
+    categoryName: string; // Name from LicenseCategory
+    createdAt?: any; // Firestore Timestamp
+};
+
+// Defines an exam in the learning path
+export type Exam = {
+  id: string;
+  name: string;
+  description?: string;
+  order: number; // The sequence of the exam in the path
+  createdAt?: any; // Firestore Timestamp
+};
+
+// Represents the status of a specific exam for a single trainee
+export type TraineeExam = {
+  id: string; // This will be the same as the Exam ID for easy mapping
+  status: 'not_started' | 'scheduled' | 'passed' | 'failed';
+  scheduledDate?: any; // Firestore Timestamp for the exam date
+  resultDate?: any; // Firestore Timestamp for when the result was recorded
+};
+
 
 export type FAQ = {
   id: string;
@@ -70,9 +80,11 @@ export type Testimonial = {
     role: string;
     avatar: 'Smile' | 'Users' | 'HeartHandshake';
     comment: string;
+    status: 'pending' | 'approved';
 };
 
-
+// The following might be part of a legacy system for displaying courses.
+// It can be adapted or removed later.
 const courseIcons: {[key: string]: LucideIcon} = {
     'b-license': Car,
     'moto-license': Bike,
@@ -143,7 +155,3 @@ export const trafficSigns = [
       },
     }
 ]
-
-    
-
-    

@@ -1,9 +1,52 @@
+
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { CheckCircle, ShieldCheck, Target } from "lucide-react";
+import { CheckCircle, ShieldCheck, Target, Camera } from "lucide-react";
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@//lib/firebase';
 
-export default function AboutPage() {
+// Define a type for the page content for type safety
+interface AboutContent {
+  title: string;
+  subtitle: string;
+  storyTitle: string;
+  storyContent: string;
+  // This will hold image URLs once the upload is functional
+  imageUrls?: string[];
+}
+
+// Async function to fetch content from Firestore
+async function getAboutContent(): Promise<AboutContent> {
+  const docRef = doc(db, 'pages', 'about');
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      // Return data from Firestore if it exists
+      return docSnap.data() as AboutContent;
+    }
+  } catch (error) {
+    console.error("Failed to fetch about page content:", error);
+    // Fallback to default content in case of an error
+  }
+
+  // Return default content if document doesn't exist or an error occurred
+  return {
+    title: 'حول أكاديمية القيادة الآمنة',
+    subtitle: 'مهمتنا هي تمكين السائقين بالمعرفة والمهارات اللازمة للتنقل في طرق اليوم بثقة وسلامة.',
+    storyTitle: 'قصتنا',
+    storyContent: 'تأسست أكاديميتنا على يد فريق من المدربين ذوي الخبرة والشغف بالقيادة الدفاعية، ونحن ملتزمون بإنشاء جيل جديد من السائقين المسؤولين. نحن نؤمن بأن تعليم القيادة يتجاوز مجرد اجتياز الاختبار؛ إنه يتعلق بغرس عادات تدوم مدى الحياة وتحافظ على سلامة الجميع على الطريق.',
+  };
+}
+
+
+export default async function AboutPage() {
+    // Fetch the dynamic content when the page loads
+    const content = await getAboutContent();
+
     const aboutImage = PlaceHolderImages.find(p => p.id === 'about-us-image');
+    
+    // Placeholder gallery images until the upload feature is fully implemented
+    const galleryImages = PlaceHolderImages.filter(p => ['course-in-action', 'driving-test', 'happy-student', 'instructor-teaching'].includes(p.id));
 
     const stats = [
         { value: "10+", label: "سنوات من الخبرة" },
@@ -16,9 +59,9 @@ export default function AboutPage() {
         <>
             <section className="py-16 sm:py-24 bg-secondary">
                 <div className="container text-center">
-                    <h1 className="font-headline text-4xl md:text-5xl font-bold">عن أكاديمية القيادة الآمنة</h1>
+                    <h1 className="font-headline text-4xl md:text-5xl font-bold">{content.title}</h1>
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                        رواد التميز في تعليم القيادة مع الالتزام بالسلامة والثقة ومهارات القيادة مدى الحياة.
+                        {content.subtitle}
                     </p>
                 </div>
             </section>
@@ -26,12 +69,9 @@ export default function AboutPage() {
             <section className="py-16 sm:py-24">
                 <div className="container grid md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
-                        <h2 className="font-headline text-3xl font-bold text-primary">قصتنا</h2>
-                        <p className="text-muted-foreground">
-                            تأسست أكاديمية القيادة الآمنة منذ أكثر من عقد من الزمان، ونبعت من شغف لخلق طرق أكثر أمانًا، سائقًا تلو الآخر. لقد رأينا حاجة إلى مدرسة لتعليم القيادة تتجاوز مجرد تعليم الطلاب لاجتياز الاختبار. كان هدفنا، ولا يزال، هو تنمية فهم عميق لسلامة الطرق والتحكم في المركبات، وتمكين طلابنا بالثقة للتعامل مع أي موقف قيادة.
-                        </p>
-                        <p className="text-muted-foreground">
-                            لقد نمونا من فريق صغير بسيارتين إلى مؤسسة رائدة في المنطقة، لكن قيمنا الأساسية المتمثلة في الصبر والاحترافية والتعليم المخصص لم تتزعزع أبدًا.
+                        <h2 className="font-headline text-3xl font-bold text-primary">{content.storyTitle}</h2>
+                        <p className="text-muted-foreground whitespace-pre-wrap">
+                           {content.storyContent}
                         </p>
                     </div>
                     <div>
@@ -49,7 +89,38 @@ export default function AboutPage() {
                 </div>
             </section>
             
+            {/* New Image Gallery Section */}
             <section className="py-16 sm:py-24 bg-secondary">
+                <div className="container">
+                    <div className="text-center mb-12">
+                         <div className="inline-flex items-center justify-center bg-primary-100 p-3 rounded-full mb-4">
+                            <Camera className="w-8 h-8 text-primary"/>
+                        </div>
+                        <h2 className="font-headline text-3xl md:text-4xl font-bold">معرض الصور</h2>
+                        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+                            نظرة على بيئتنا التعليمية وسياراتنا الحديثة وطلابنا.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                        {galleryImages.map(image => (
+                            <div key={image.id} className="group relative overflow-hidden rounded-lg shadow-lg aspect-w-1 aspect-h-1">
+                                <Image 
+                                    src={image.imageUrl}
+                                    alt={image.description}
+                                    fill
+                                    className="object-cover w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-110"
+                                />
+                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
+                                <div className="absolute bottom-0 left-0 p-4">
+                                    <p className="text-white text-sm font-semibold drop-shadow-md">{image.description}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            
+            <section className="py-16 sm:py-24">
                 <div className="container">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                         {stats.map(stat => (
@@ -62,7 +133,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            <section className="py-16 sm:py-24">
+            <section className="py-16 sm:py-24 bg-secondary">
                 <div className="container grid md:grid-cols-3 gap-8 text-center">
                     <div className="space-y-4">
                         <Target className="mx-auto w-12 h-12 text-primary"/>

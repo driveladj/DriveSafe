@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,20 +6,16 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star, ArrowLeft, MessageSquare } from "lucide-react";
+import { Users, DollarSign, BookOpen, UserPlus, Loader2, Edit, HelpCircle, Package, Star, ArrowLeft, MessageSquare, CheckCircle, FileText, ListTree } from "lucide-react";
 import { getCourses } from "@/lib/data-access";
-import type { Course, FAQ, PricingTier, Testimonial } from "@/lib/data";
-import { useAuth } from '@/hooks/use-auth';
+import type { Course, FAQ, PricingTier, Testimonial, Feature, LicenseCategory } from "@/lib/data";
+import { useAuth } from '@/hooks/use-auth.tsx';
 import { useRouter } from 'next/navigation';
-import AddCourseDialog from '@/components/admin/add-course-dialog';
-import DeleteCourseAlert from '@/components/admin/delete-course-alert';
-import EditCourseDialog from '@/components/admin/edit-course-dialog';
 import { collection, getDocs, orderBy, query, limit, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import AddFaqDialog from '@/components/admin/add-faq-dialog';
 import EditFaqDialog from '@/components/admin/edit-faq-dialog';
 import DeleteFaqAlert from '@/components/admin/delete-faq-alert';
-import HomeContentForm from '@/components/admin/home-content-form';
 import AnnoucementsCard from '@/components/admin/announcements-card';
 import AddPriceDialog from '@/components/admin/add-price-dialog';
 import EditPriceDialog from '@/components/admin/edit-price-dialog';
@@ -30,7 +25,15 @@ import AddTestimonialDialog from '@/components/admin/add-testimonial-dialog';
 import EditTestimonialDialog from '@/components/admin/edit-testimonial-dialog';
 import DeleteTestimonialAlert from '@/components/admin/delete-testimonial-alert';
 import PendingTestimonialsCard from '@/components/admin/pending-testimonials-card';
-
+import { TraineeRegistrationsChart } from '@/components/admin/trainee-registrations-chart';
+import AddFeatureDialog from '@/components/admin/add-feature-dialog';
+import EditFeatureDialog from '@/components/admin/edit-feature-dialog';
+import DeleteFeatureAlert from '@/components/admin/delete-feature-alert';
+import { availableIcons } from '@/lib/icons';
+import AddTraineeDialog from '@/components/admin/add-trainee-dialog';
+import AddCategoryDialog from '@/components/admin/add-category-dialog';
+import EditCategoryDialog from '@/components/admin/edit-category-dialog';
+import DeleteCategoryAlert from '@/components/admin/delete-category-alert';
 
 interface Trainee {
     uid: string;
@@ -45,24 +48,33 @@ interface Trainee {
 export default function AdminPage() {
     const { user, loading: authLoading, userDetails } = useAuth();
     const router = useRouter();
-    const [courses, setCourses] = useState<Course[]>([]);
+    const [licenseCategories, setLicenseCategories] = useState<LicenseCategory[]>([]);
     const [faqs, setFaqs] = useState<FAQ[]>([]);
     const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [features, setFeatures] = useState<Feature[]>([]);
     const [recentTrainees, setRecentTrainees] = useState<Trainee[]>([]);
+    const [allTrainees, setAllTrainees] = useState<Trainee[]>([]);
     const [traineeCount, setTraineeCount] = useState<number | string>('...');
-    const [loadingCourses, setLoadingCourses] = useState(true);
+    const [loadingCategories, setLoadingCategories] = useState(true);
     const [loadingFaqs, setLoadingFaqs] = useState(true);
     const [loadingTrainees, setLoadingTrainees] = useState(true);
     const [loadingPrices, setLoadingPrices] = useState(true);
     const [loadingTestimonials, setLoadingTestimonials] = useState(true);
+    const [loadingFeatures, setLoadingFeatures] = useState(true);
 
-
-    const fetchCourses = async () => {
-        setLoadingCourses(true);
-        const fetchedCourses = await getCourses(10);
-        setCourses(fetchedCourses);
-        setLoadingCourses(false);
+     const fetchLicenseCategories = async () => {
+        setLoadingCategories(true);
+        try {
+            const categoriesCol = query(collection(db, 'licenseCategories'), orderBy('createdAt', 'desc'));
+            const categorySnapshot = await getDocs(categoriesCol);
+            const categoryList = categorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LicenseCategory));
+            setLicenseCategories(categoryList);
+        } catch (error) {
+            console.error("Error fetching license categories:", error);
+        } finally {
+            setLoadingCategories(false);
+        }
     };
 
     const fetchFaqs = async () => {
@@ -89,25 +101,31 @@ export default function AdminPage() {
         setLoadingTestimonials(false);
     };
 
-    const fetchRecentTrainees = async () => {
+    const fetchTrainees = async () => {
         setLoadingTrainees(true);
         try {
             const traineesQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+            const traineeSnapshot = await getDocs(traineesQuery);
+            const allTraineesData = traineeSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Trainee));
             
-            // Get total count
-            const countSnapshot = await getCountFromServer(collection(db, 'users'));
-            setTraineeCount(countSnapshot.data().count);
-            
-            // Get recent 5
-            const recentTraineesQuery = query(traineesQuery, limit(5));
-            const traineeSnapshot = await getDocs(recentTraineesQuery);
-            setRecentTrainees(traineeSnapshot.docs.map(doc => doc.data() as Trainee));
+            setAllTrainees(allTraineesData);
+            setRecentTrainees(allTraineesData.slice(0, 5));
+            setTraineeCount(allTraineesData.length);
+
         } catch (error) {
             console.error("Error fetching trainee data:", error);
             setTraineeCount(0);
         } finally {
             setLoadingTrainees(false);
         }
+    };
+    
+    const fetchFeatures = async () => {
+      setLoadingFeatures(true);
+      const featuresCol = query(collection(db, 'features'), orderBy('order', 'asc'));
+      const featureSnapshot = await getDocs(featuresCol);
+      setFeatures(featureSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Feature)));
+      setLoadingFeatures(false);
     };
 
 
@@ -116,11 +134,12 @@ export default function AdminPage() {
             if (!user || userDetails?.role !== 'admin') {
                 router.push('/login');
             } else {
-                fetchCourses();
+                fetchLicenseCategories();
                 fetchFaqs();
-                fetchRecentTrainees();
+                fetchTrainees();
                 fetchPrices();
                 fetchTestimonials();
+                fetchFeatures();
             }
         }
     }, [user, authLoading, userDetails, router]);
@@ -133,21 +152,21 @@ export default function AdminPage() {
             change: "كل التسجيلات",
         },
         {
-            title: "الإيرادات (تقديري)",
-            value: "75,345 دج",
-            icon: DollarSign,
-            change: "+20.1% عن الشهر الماضي",
+            title: "الميزات",
+            value: features.length,
+            icon: CheckCircle,
+            change: "في الصفحة الرئيسية",
         },
         {
-            title: "التسجيلات الجديدة (هذا الشهر)",
-            value: "+82",
-            icon: UserPlus,
-            change: "+30% عن الشهر الماضي",
+            title: "الأسئلة الشائعة",
+            value: faqs.length,
+            icon: HelpCircle,
+            change: "في صفحة الأسئلة",
         },
         {
-            title: "الدورات النشطة",
-            value: courses.length,
-            icon: BookOpen,
+            title: "أصناف الرخص",
+            value: licenseCategories.length,
+            icon: ListTree,
             change: "",
         }
     ];
@@ -162,13 +181,14 @@ export default function AdminPage() {
 
     const formatDate = (timestamp: Timestamp | undefined) => {
         if (!timestamp) return 'غير معروف';
-        return timestamp.toDate().toLocaleDateString('ar-EG');
+        return timestamp.toDate().toLocaleDateString('ar-DZ');
     }
 
     return (
-        <div className="flex-1 space-y-8 p-8 pt-6 bg-background">
+        <div className="flex-1 space-y-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">لوحة تحكم المدير</h1>
+                <h1 className="text-3xl font-bold tracking-tight">لوحة التحكم الرئيسية</h1>
+                 <AddTraineeDialog onTraineeAdded={fetchTrainees} />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -187,30 +207,26 @@ export default function AdminPage() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-2">
-                 <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>محتوى الصفحة الرئيسية</CardTitle>
-                        <CardDescription>تعديل النصوص الرئيسية وأيقونة الموقع في صفحة الهبوط.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <HomeContentForm />
-                    </CardContent>
-                </Card>
+                <div className="lg:col-span-2">
+                    <TraineeRegistrationsChart trainees={allTrainees} />
+                </div>
+            </div>
 
+            <div className="space-y-8">
                  <Card className="lg:col-span-2">
                     <AnnoucementsCard />
                 </Card>
 
-                <Card>
+                 <Card id="categories-section">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle>إدارة الدورات</CardTitle>
-                            <CardDescription>إضافة وتعديل وحذف الدورات التدريبية.</CardDescription>
+                            <CardTitle>إدارة أصناف الرخص</CardTitle>
+                            <CardDescription>إضافة وتعديل وحذف أصناف رخص السياقة.</CardDescription>
                         </div>
-                        <AddCourseDialog onCourseAdded={fetchCourses} />
+                        <AddCategoryDialog onCategoryAdded={fetchLicenseCategories} />
                     </CardHeader>
                     <CardContent>
-                       {loadingCourses ? (
+                       {loadingCategories ? (
                             <div className="flex justify-center items-center py-12">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                             </div>
@@ -218,26 +234,28 @@ export default function AdminPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>اسم الدورة</TableHead>
-                                    <TableHead>ID</TableHead>
-                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                    <TableHead>اسم الصنف</TableHead>
+                                    <TableHead>الوصف</TableHead>
+                                    <TableHead className="text-right">الإجراءات</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {courses.map((course) => (
-                                    <TableRow key={course.id}>
-                                        <TableCell className="font-medium">{course.name}</TableCell>
-                                        <TableCell>{course.id}</TableCell>
-                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
-                                            <EditCourseDialog course={course} onCourseUpdated={fetchCourses} />
-                                            <DeleteCourseAlert courseId={course.id} onCourseDeleted={fetchCourses} />
+                                {licenseCategories.map((category) => (
+                                    <TableRow key={category.id}>
+                                        <TableCell className="font-medium">{category.name}</TableCell>
+                                        <TableCell className="truncate max-w-[300px]">{category.description || '-'}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <EditCategoryDialog category={category} onCategoryUpdated={fetchLicenseCategories} />
+                                                <DeleteCategoryAlert categoryId={category.id} categoryName={category.name} onCategoryDeleted={fetchLicenseCategories} />
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {courses.length === 0 && (
+                                {licenseCategories.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={3} className="text-center">
-                                            لم يتم العثور على دورات. قم بإضافة دورة جديدة.
+                                        <TableCell colSpan={3} className="text-center h-24">
+                                            لم يتم العثور على أصناف. قم بإضافة صنف جديد.
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -247,7 +265,59 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
 
-                 <Card>
+                <Card id="features-section" className="lg:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle>إدارة الميزات (لماذا تختارنا)</CardTitle>
+                            <CardDescription>إدارة الميزات التي تظهر في الصفحة الرئيسية.</CardDescription>
+                        </div>
+                        <AddFeatureDialog onFeatureAdded={fetchFeatures} />
+                    </CardHeader>
+                    <CardContent>
+                       {loadingFeatures ? (
+                            <div className="flex justify-center items-center py-12">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>الأيقونة</TableHead>
+                                    <TableHead>العنوان</TableHead>
+                                    <TableHead>الوصف</TableHead>
+                                    <TableHead>الترتيب</TableHead>
+                                    <TableHead className="text-left">الإجراءات</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {features.map((feature) => {
+                                    const IconComponent = availableIcons[feature.icon] || HelpCircle;
+                                    return (
+                                    <TableRow key={feature.id}>
+                                        <TableCell><IconComponent className="h-6 w-6" /></TableCell>
+                                        <TableCell className="font-medium">{feature.title}</TableCell>
+                                        <TableCell className="truncate max-w-[200px]">{feature.description}</TableCell>
+                                        <TableCell>{feature.order}</TableCell>
+                                        <TableCell className="text-left space-x-2 flex items-center justify-end">
+                                            <EditFeatureDialog feature={feature} onFeatureUpdated={fetchFeatures} />
+                                            <DeleteFeatureAlert featureId={feature.id} onFeatureDeleted={fetchFeatures} />
+                                        </TableCell>
+                                    </TableRow>
+                                )}) }
+                                {features.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center">
+                                            لم يتم العثور على ميزات.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                        )}
+                    </CardContent>
+                </Card>
+
+                 <Card id="faq-section">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle>إدارة الأسئلة الشائعة</CardTitle>
@@ -291,7 +361,7 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
                 
-                <Card className="lg:col-span-2">
+                <Card id="pricing-section" className="lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle>إدارة خطط الأسعار</CardTitle>
@@ -322,7 +392,7 @@ export default function AdminPage() {
                                             {tier.bestDeal && <Star className="w-5 h-5 text-yellow-500 fill-yellow-400" />}
                                         </TableCell>
                                         <TableCell className="font-medium">{tier.name}</TableCell>
-                                        <TableCell>{tier.price} دج</TableCell>
+                                        <TableCell>{tier.price} د.ج</TableCell>
                                         <TableCell>{tier.licenseType}</TableCell>
                                         <TableCell className="text-left space-x-2 flex items-center justify-end">
                                             <EditPriceDialog tier={tier} onPriceUpdated={fetchPrices} />
@@ -343,7 +413,7 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
 
-                 <Card className="lg:col-span-2">
+                 <Card id="testimonials-section" className="lg:col-span-2">
                     <PendingTestimonialsCard onTestimonialApproved={fetchTestimonials} />
                 </Card>
 
@@ -468,3 +538,5 @@ export default function AdminPage() {
         </div>
     );
 }
+
+    

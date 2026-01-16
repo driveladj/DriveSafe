@@ -1,22 +1,16 @@
+import { Award, BarChart, Car, UserCheck, ShieldCheck, Users, HelpCircle, Star, BookOpen, DollarSign, UserPlus } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-import { Car, Truck, Bus, Bike, CarFront, type LucideProps } from 'lucide-react';
-import React from 'react';
-
-export const ICONS = {
-    Car: { component: Car, label: 'سيارة' },
-    Truck: { component: Truck, label: 'شاحنة' },
-    Bus: { component: Bus, label: 'حافلة' },
-    Bike: { component: Bike, label: 'دراجة نارية' },
-    CarFront: { component: CarFront, label: 'سيارة (أمامي)' },
+export const availableIcons: { [key: string]: LucideIcon } = {
+    'Award': Award,
+    'BarChart': BarChart,
+    'Car': Car,
+    'UserCheck': UserCheck,
+    'ShieldCheck': ShieldCheck,
+    'Users': Users,
+    'HelpCircle': HelpCircle,
+    'Star': Star,
+    'BookOpen': BookOpen,
+    'DollarSign': DollarSign,
+    'UserPlus': UserPlus,
 };
-
-type IconName = keyof typeof ICONS;
-
-interface IconProps extends LucideProps {
-  name: IconName;
-}
-
-export function Icon({ name, ...props }: IconProps) {
-  const IconComponent = ICONS[name] ? ICONS[name].component : Car;
-  return <IconComponent {...props} />;
-}

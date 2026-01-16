@@ -19,29 +19,28 @@ import { Loader2, Trash2 } from 'lucide-react';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface DeleteCourseAlertProps {
-    courseId: string;
-    courseName: string;
-    onCourseDeleted: () => void;
+interface DeleteBannerAlertProps {
+    signId: string;
+    signName: string;
 }
 
-export default function DeleteCourseAlert({ courseId, courseName, onCourseDeleted }: DeleteCourseAlertProps) {
+export default function DeleteBannerAlert({ signId, signName }: DeleteBannerAlertProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const { toast } = useToast();
 
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const courseRef = doc(db, 'courses', courseId);
-            await deleteDoc(courseRef);
-            
-            toast({ title: "تم الحذف!", description: `تم حذف دورة \"${courseName}\" بنجاح.` });
-            onCourseDeleted();
+            const signRef = doc(db, 'trafficSigns', signId);
+            await deleteDoc(signRef);
+            // Note: This does not delete the image from storage, which might be desired.
+            // Implementing storage deletion would require passing the imageUrl and using deleteObject from firebase/storage.
+            toast({ title: "Success!", description: `The sign "${signName}" has been deleted.` });
         } catch (error) {
-            console.error("Error deleting course: ", error);
-            toast({ title: "خطأ", description: "فشل حذف الدورة.", variant: "destructive" });
+            console.error("Error deleting document: ", error);
+            toast({ title: "Error", description: "Failed to delete the traffic sign.", variant: "destructive" });
         } finally {
-           // No need to set isDeleting to false if the component unmounts
+            setIsDeleting(false);
         }
     };
 
@@ -50,21 +49,22 @@ export default function DeleteCourseAlert({ courseId, courseName, onCourseDelete
             <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="icon">
                     <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">حذف</span>
+                    <span className="sr-only">Delete</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف دورة <span className="font-bold">{courseName}</span> بشكل دائم.
+                        This action cannot be undone. This will permanently delete the traffic sign
+                        <span className="font-bold"> {signName}</span> from the database.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} 
-                        نعم، قم بالحذف
+                        Continue
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

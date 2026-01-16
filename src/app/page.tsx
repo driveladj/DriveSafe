@@ -1,5 +1,6 @@
 import HeroSection from '@/components/home/hero-section';
 import FeaturesSection from '@/components/home/features-section';
+import OwnerSection from '@/components/home/owner-section';
 import CoursesSection from '@/components/home/courses-section';
 import TestimonialsSection from '@/components/home/testimonials-section';
 import CtaSection from '@/components/home/cta-section';
@@ -12,6 +13,7 @@ export default function Home() {
       <AnnouncementBar />
       <HeroSection />
       <FeaturesSection />
+      <OwnerSection />
       <CoursesSection />
       <GallerySection />
       <TestimonialsSection />

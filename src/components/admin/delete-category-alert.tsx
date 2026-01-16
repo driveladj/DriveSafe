@@ -19,29 +19,29 @@ import { Loader2, Trash2 } from 'lucide-react';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-interface DeleteCourseAlertProps {
-    courseId: string;
-    courseName: string;
-    onCourseDeleted: () => void;
+interface DeleteCategoryAlertProps {
+    categoryId: string;
+    categoryName: string;
+    onCategoryDeleted: () => void;
 }
 
-export default function DeleteCourseAlert({ courseId, courseName, onCourseDeleted }: DeleteCourseAlertProps) {
+export default function DeleteCategoryAlert({ categoryId, categoryName, onCategoryDeleted }: DeleteCategoryAlertProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const { toast } = useToast();
 
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const courseRef = doc(db, 'courses', courseId);
-            await deleteDoc(courseRef);
+            const categoryRef = doc(db, 'licenseCategories', categoryId);
+            await deleteDoc(categoryRef);
             
-            toast({ title: "تم الحذف!", description: `تم حذف دورة \"${courseName}\" بنجاح.` });
-            onCourseDeleted();
+            toast({ title: "تم الحذف!", description: `تم حذف صنف \"${categoryName}\" بنجاح.` });
+            onCategoryDeleted();
         } catch (error) {
-            console.error("Error deleting course: ", error);
-            toast({ title: "خطأ", description: "فشل حذف الدورة.", variant: "destructive" });
+            console.error("Error deleting category: ", error);
+            toast({ title: "خطأ", description: "فشل حذف الصنف.", variant: "destructive" });
         } finally {
-           // No need to set isDeleting to false if the component unmounts
+            // No need to set isDeleting to false if the component unmounts
         }
     };
 
@@ -57,7 +57,8 @@ export default function DeleteCourseAlert({ courseId, courseName, onCourseDelete
                 <AlertDialogHeader>
                     <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
                     <AlertDialogDescription>
-                        هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف دورة <span className="font-bold">{courseName}</span> بشكل دائم.
+                        هذا الإجراء لا يمكن التراجع عنه. سيؤدي هذا إلى حذف صنف <span className="font-bold">{categoryName}</span> بشكل دائم.
+                         قد يؤثر هذا على الدورات والطلاب المرتبطين بهذا الصنف.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
