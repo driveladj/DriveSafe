@@ -67,6 +67,8 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
       role: "user",
       status: "مؤكد",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      totalAmount: 0,
+      paidAmount: 0,
     });
     
     functions.logger.log(`Successfully created new trainee ${userRecord.uid} by admin ${context.auth.uid}`);
