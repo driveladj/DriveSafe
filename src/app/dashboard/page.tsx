@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from "@/hooks/use-auth.tsx";
@@ -121,7 +120,11 @@ export default function DashboardPage() {
                         <p><strong>الاسم:</strong> {userDetails.firstNameAr} {userDetails.lastNameAr}</p>
                         <p><strong>رقم الهاتف:</strong> {userDetails.phone}</p>
                         <p><strong>الدورة المسجلة:</strong> {userDetails.licenseType}</p>
-                        <Button variant="outline" className="mt-4">تعديل الملف الشخصي</Button>
+                        <Button asChild variant="outline" className="mt-4">
+                            <Link href="/dashboard/profile">
+                                تعديل الملف الشخصي
+                            </Link>
+                        </Button>
                     </CardContent>
                 </Card>
 

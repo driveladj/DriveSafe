@@ -91,3 +91,58 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError("internal", "An error occurred while creating the trainee.");
   }
 });
+
+
+/**
+ * Updates a trainee's own profile information in Firestore.
+ */
+exports.updateTraineeProfile = functions.https.onCall(async (data, context) => {
+  // 1. Authentication Check: Make sure the user is authenticated.
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "The function must be called while authenticated.");
+  }
+
+  const uid = context.auth.uid;
+
+  // 2. Destructure and Validate Input Data
+  const {
+    firstNameAr,
+    lastNameAr,
+    firstNameEn,
+    lastNameEn,
+    dateOfBirth,
+    placeOfBirth,
+  } = data;
+
+  if (!firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !dateOfBirth || !placeOfBirth) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. All name fields, date of birth, and place of birth are mandatory.");
+  }
+
+  try {
+    // 3. Update Firestore Document
+    const userDocRef = admin.firestore().collection("users").doc(uid);
+    
+    await userDocRef.update({
+      firstNameAr,
+      lastNameAr,
+      firstNameEn,
+      lastNameEn,
+      dateOfBirth,
+      placeOfBirth,
+    });
+
+    // 4. Update display name in Firebase Auth
+    await admin.auth().updateUser(uid, {
+        displayName: `${firstNameAr} ${lastNameAr}`,
+    });
+
+    functions.logger.log(`Successfully updated profile for trainee ${uid}`);
+
+    // 5. Return Success Response
+    return { result: `Successfully updated profile for trainee ${uid}.` };
+
+  } catch (error) {
+    functions.logger.error(`Error updating profile for trainee ${uid}:`, error);
+    throw new functions.https.HttpsError("internal", "An error occurred while updating the profile.");
+  }
+});
