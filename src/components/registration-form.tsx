@@ -6,7 +6,7 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc, getDocs, collection, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, Timestamp, query, orderBy } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import React, { useEffect, useState } from "react";
 
@@ -24,13 +24,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { FormDescription } from "./ui/form"
+import type { LicenseCategory } from "@/lib/data";
 
 const formSchema = z.object({
   firstNameAr: z.string().min(2, { message: "الاسم الأول (بالعربية) مطلوب." }),
   lastNameAr: z.string().min(2, { message: "اسم العائلة (بالعربية) مطلوب." }),
   firstNameEn: z.string().min(2, { message: "الاسم الأول (باللاتينية) مطلوب." }),
   lastNameEn: z.string().min(2, { message: "اسم العائلة (باللاتينية) مطلوب." }),
-  licenseType: z.string().optional(),
+  licenseType: z.string({ required_error: "نوع الرخصة إجباري." }),
   phone: z.string().min(9, { message: "يرجى إدخال رقم هاتف صالح." }),
   password: z.string().min(8, { message: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل." }),
   confirmPassword: z.string(),
@@ -45,17 +46,17 @@ export default function RegistrationForm() {
     const { toast } = useToast()
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
-    const [courses, setCourses] = useState<{ id: string; name: string }[]>([]);
+    const [licenseCategories, setLicenseCategories] = useState<LicenseCategory[]>([]);
 
     useEffect(() => {
-      const fetchCourses = async () => {
-        const coursesCollection = collection(db, 'courses');
-        const courseSnapshot = await getDocs(coursesCollection);
-        const courseList = courseSnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
-        setCourses(courseList);
+      const fetchCategories = async () => {
+        const categoriesCollection = query(collection(db, 'licenseCategories'), orderBy('name', 'asc'));
+        const categorySnapshot = await getDocs(categoriesCollection);
+        const categoryList = categorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LicenseCategory));
+        setLicenseCategories(categoryList);
       };
 
-      fetchCourses();
+      fetchCategories();
     }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -69,27 +70,22 @@ export default function RegistrationForm() {
             password: "",
             confirmPassword: "",
             acceptTerms: false,
-            licenseType: "",
         },
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
         
-        // Use a fake email for Firebase Auth, as phone is the primary identifier
         const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
 
         try {
-            // 1. Create the user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, emailForAuth, values.password);
             const user = userCredential.user;
 
-            // Set user's display name in Auth
             await updateProfile(user, {
                 displayName: `${values.firstNameAr} ${values.lastNameAr}`
             });
 
-            // 2. Create the user document in Firestore with all required data
             await setDoc(doc(db, "users", user.uid), {
                 uid: user.uid,
                 firstNameAr: values.firstNameAr,
@@ -97,12 +93,12 @@ export default function RegistrationForm() {
                 firstNameEn: values.firstNameEn,
                 lastNameEn: values.lastNameEn,
                 phone: values.phone,
-                email: emailForAuth, // Store the fake email
-                licenseType: values.licenseType || 'لم يحدد',
-                role: "user", // "user" role for trainees, "admin" for admins
-                status: 'في الانتظار', // Default status for admin review
+                email: emailForAuth,
+                licenseType: values.licenseType,
+                role: "user",
+                status: 'في الانتظار',
                 createdAt: Timestamp.now(),
-                totalAmount: 0, // Default financial values
+                totalAmount: 0,
                 paidAmount: 0,
             });
 
@@ -159,12 +155,11 @@ export default function RegistrationForm() {
                 )} />
 
                 <FormField control={form.control} name="licenseType" render={({ field }) => (
-                    <FormItem><FormLabel>الدورة (اختياري)</FormLabel>
+                    <FormItem><FormLabel>نوع الرخصة</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger><SelectValue placeholder="اختر نوع الرخصة" /></SelectTrigger></FormControl>
                             <SelectContent>
-                                <SelectItem value="لم يحدد">لم أحدد بعد</SelectItem>
-                                {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
+                                {licenseCategories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     <FormMessage /></FormItem>

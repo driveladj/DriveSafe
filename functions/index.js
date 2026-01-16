@@ -33,7 +33,7 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
 
   // Phone number and password are now the critical fields for auth creation
   if (!phone || !password || !firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !licenseType) {
-    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number is mandatory.");
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number, password, names, and license type are mandatory.");
   }
 
   // 3. Prepare the payload for Firebase Auth creation
