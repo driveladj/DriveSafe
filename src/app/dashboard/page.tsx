@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Loader2, Edit } from "lucide-react";
+import { Bell, Loader2, Edit, DollarSign, CheckCircle, AlertCircle } from "lucide-react";
 import { collection, getDocs, orderBy, query, limit, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatDistanceToNow } from 'date-fns';
@@ -63,6 +63,10 @@ export default function DashboardPage() {
         return formatDistanceToNow(timestamp.toDate(), { addSuffix: true, locale: ar });
     };
 
+    const totalAmount = userDetails.totalAmount || 0;
+    const paidAmount = userDetails.paidAmount || 0;
+    const remainingAmount = totalAmount - paidAmount;
+
     return (
         <div className="container py-12">
             <div className="space-y-4 mb-8">
@@ -71,6 +75,43 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+                 <Card className="md:col-span-2 lg:col-span-3">
+                    <CardHeader>
+                        <CardTitle>الوضع المالي</CardTitle>
+                        <CardDescription>نظرة سريعة على الرسوم الدراسية الخاصة بك.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-3">
+                        <Card>
+                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">المبلغ الإجمالي</CardTitle>
+                                <DollarSign className="h-5 w-5 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalAmount.toFixed(2)} د.ج</div>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">المبلغ المدفوع</CardTitle>
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-green-600">{paidAmount.toFixed(2)} د.ج</div>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">المبلغ المتبقي</CardTitle>
+                                <AlertCircle className="h-5 w-5 text-red-600" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-red-600">{remainingAmount.toFixed(2)} د.ج</div>
+                            </CardContent>
+                        </Card>
+                    </CardContent>
+                </Card>
+
                 <Card>
                     <CardHeader>
                         <CardTitle>ملفي الشخصي</CardTitle>
