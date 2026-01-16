@@ -175,6 +175,9 @@ export default function TraineesPage() {
     return (
         <>
             <style>{`
+                .print-container {
+                    display: none;
+                }
                 @media print {
                     body {
                         visibility: hidden;
