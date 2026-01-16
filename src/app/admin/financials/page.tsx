@@ -39,7 +39,7 @@ export default function FinancialsPage() {
 
     const fetchData = async () => {
         try {
-            const q = query(collection(db, 'users'), where('status', 'in', ['مؤكد', 'في الانتظار']));
+            const q = query(collection(db, 'users'), where('status', '==', 'مؤكد'));
             const traineesSnap = await getDocs(q);
             const traineesData = traineesSnap.docs.map(doc => ({ uid: doc.id, ...doc.data() } as TraineeFinancial));
             setTrainees(traineesData);
@@ -95,7 +95,7 @@ export default function FinancialsPage() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>الإدارة المالية</CardTitle>
-                        <CardDescription>عرض وإدارة الأقساط والمبالغ المستحقة للمتدربين النشطين.</CardDescription>
+                        <CardDescription>عرض وإدارة الأقساط والمبالغ المستحقة للمتدربين المؤكدين.</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
