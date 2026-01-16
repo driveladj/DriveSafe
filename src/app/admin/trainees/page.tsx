@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -301,7 +301,11 @@ export default function TraineesPage() {
                           <TableBody>
                               {filteredTrainees.map((trainee) => (
                                   <TableRow key={trainee.uid}>
-                                      <TableCell className="font-medium">{trainee.firstNameAr} {trainee.lastNameAr}</TableCell>
+                                      <TableCell className="font-medium">
+                                        <Link href={`/admin/trainees/${trainee.uid}`} className="hover:underline">
+                                          {trainee.firstNameAr} {trainee.lastNameAr}
+                                        </Link>
+                                      </TableCell>
                                       <TableCell>{trainee.phone}</TableCell>
                                       <TableCell>{trainee.licenseType || 'لم يحدد'}</TableCell>
                                       <TableCell>{trainee.examType || 'لم يحدد'}</TableCell>
@@ -311,7 +315,6 @@ export default function TraineesPage() {
                                           <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                               <DropdownMenuContent align="end">
                                                   <DropdownMenuLabel>إجراءات</DropdownMenuLabel>
-                                                  <DropdownMenuItem onClick={() => router.push(`/admin/trainees/${trainee.uid}`)}><FileText className="ml-2 h-4 w-4"/>عرض التفاصيل</DropdownMenuItem>
                                                   <DropdownMenuItem onClick={() => handleEditClick(trainee)}>تعديل</DropdownMenuItem>
                                                   <DropdownMenuItem onClick={() => handleDeleteClick(trainee)} className="text-red-600">حذف</DropdownMenuItem>
                                               </DropdownMenuContent>
