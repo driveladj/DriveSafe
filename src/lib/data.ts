@@ -7,7 +7,7 @@ export const navItems = [
     { href: '/about', label: 'من نحن' },
     { href: '/courses', label: 'الدورات' },
     { href: '/pricing', label: 'الأسعار' },
-    { href: '/banners', label: 'اللافتات' },
+    { href: '/traffic-signs', label: 'إشارات المرور' },
     { href: '/gallery', label: 'المعرض' },
     { href: '/faq', label: 'الأسئلة الشائعة' },
     { href: '/contact', label: 'اتصل بنا' },
