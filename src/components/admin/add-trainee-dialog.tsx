@@ -30,11 +30,7 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-
-interface LicenseCategory {
-    id: string;
-    name: string;
-}
+import type { Course } from '@/lib/data';
 
 const formSchema = z.object({
   firstNameAr: z.string().min(2, 'الاسم الأول (بالعربية) مطلوب'),
@@ -44,7 +40,7 @@ const formSchema = z.object({
   phone: z.string().min(10, 'رقم الهاتف إجباري ويستخدم لتسجيل الدخول'),
   email: z.string().email('بريد إلكتروني غير صالح').optional().or(z.literal('')),
   password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
-  licenseType: z.string().min(1, "نوع الرخصة مطلوب"),
+  licenseType: z.string().optional(),
 });
 
 type AddTraineeDialogProps = {
@@ -54,7 +50,7 @@ type AddTraineeDialogProps = {
 export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [licenseCategories, setLicenseCategories] = useState<LicenseCategory[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,19 +59,19 @@ export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogPro
   });
   
   useEffect(() => {
-    const fetchLicenseCategories = async () => {
+    const fetchCourses = async () => {
         try {
-            const categoriesCol = query(collection(db, 'licenseCategories'), orderBy('name', 'asc'));
-            const categorySnapshot = await getDocs(categoriesCol);
-            const categoryList = categorySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name as string }));
-            setLicenseCategories(categoryList);
+            const coursesCollection = query(collection(db, 'courses'), orderBy('name', 'asc'));
+            const courseSnapshot = await getDocs(coursesCollection);
+            const courseList = courseSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course));
+            setCourses(courseList);
         } catch (error) {
-            console.error("Error fetching license categories:", error);
+            console.error("Error fetching courses:", error);
         }
     };
 
     if (open) {
-        fetchLicenseCategories();
+        fetchCourses();
         form.reset({ firstNameAr: '', lastNameAr: '', firstNameEn: '', lastNameEn: '', phone: '', email: '', password: '', licenseType: '' });
     }
   }, [open, form]);
@@ -122,10 +118,12 @@ export default function AddTraineeDialog({ onTraineeAdded }: AddTraineeDialogPro
             <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>كلمة المرور</FormLabel><FormControl><Input {...field} type="password" /></FormControl><FormMessage /></FormItem>)} />
             <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>البريد الإلكتروني (اختياري)</FormLabel><FormControl><Input {...field} placeholder="اختياري" /></FormControl><FormMessage /></FormItem>)} />
             <FormField control={form.control} name="licenseType" render={({ field }) => (
-              <FormItem><FormLabel>نوع الرخصة</FormLabel>
+              <FormItem><FormLabel>الدورة (اختياري)</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="اختر نوع الرخصة..." /></SelectTrigger></FormControl>
-                  <SelectContent>{licenseCategories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
+                  <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة..." /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {courses.map(course => <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>)}
+                  </SelectContent>
                 </Select>
               <FormMessage />
               </FormItem>)}

@@ -159,7 +159,7 @@ export default function RegistrationForm() {
                 )} />
 
                 <FormField control={form.control} name="licenseType" render={({ field }) => (
-                    <FormItem><FormLabel>نوع الرخصة/الدورة (اختياري)</FormLabel>
+                    <FormItem><FormLabel>الدورة (اختياري)</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="اختر دورة" /></SelectTrigger></FormControl>
                             <SelectContent>
