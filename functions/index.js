@@ -27,13 +27,15 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
     lastNameAr,
     firstNameEn,
     lastNameEn,
+    dateOfBirth,
+    placeOfBirth,
     licenseType,
     email, // Optional
   } = data;
 
   // Phone number and password are now the critical fields for auth creation
-  if (!phone || !password || !firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !licenseType) {
-    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number, password, names, and license type are mandatory.");
+  if (!phone || !password || !firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !licenseType || !dateOfBirth || !placeOfBirth) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. Phone number, password, names, license type, date and place of birth are mandatory.");
   }
 
   // 3. Prepare the payload for Firebase Auth creation
@@ -61,6 +63,8 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
       lastNameAr,
       firstNameEn,
       lastNameEn,
+      dateOfBirth,
+      placeOfBirth,
       phone: phone, // Mandatory phone number
       email: email || "", // Optional email
       licenseType,
@@ -85,5 +89,60 @@ exports.createTrainee = functions.https.onCall(async (data, context) => {
          throw new functions.https.HttpsError("already-exists", "البريد الإلكتروني هذا مستخدم بالفعل من قبل حساب آخر.");
     }
     throw new functions.https.HttpsError("internal", "An error occurred while creating the trainee.");
+  }
+});
+
+
+/**
+ * Updates a trainee's own profile information in Firestore.
+ */
+exports.updateTraineeProfile = functions.https.onCall(async (data, context) => {
+  // 1. Authentication Check: Make sure the user is authenticated.
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "The function must be called while authenticated.");
+  }
+
+  const uid = context.auth.uid;
+
+  // 2. Destructure and Validate Input Data
+  const {
+    firstNameAr,
+    lastNameAr,
+    firstNameEn,
+    lastNameEn,
+    dateOfBirth,
+    placeOfBirth,
+  } = data;
+
+  if (!firstNameAr || !lastNameAr || !firstNameEn || !lastNameEn || !dateOfBirth || !placeOfBirth) {
+    throw new functions.https.HttpsError("invalid-argument", "Missing required fields. All name fields, date of birth, and place of birth are mandatory.");
+  }
+
+  try {
+    // 3. Update Firestore Document
+    const userDocRef = admin.firestore().collection("users").doc(uid);
+    
+    await userDocRef.update({
+      firstNameAr,
+      lastNameAr,
+      firstNameEn,
+      lastNameEn,
+      dateOfBirth,
+      placeOfBirth,
+    });
+
+    // 4. Update display name in Firebase Auth
+    await admin.auth().updateUser(uid, {
+        displayName: `${firstNameAr} ${lastNameAr}`,
+    });
+
+    functions.logger.log(`Successfully updated profile for trainee ${uid}`);
+
+    // 5. Return Success Response
+    return { result: `Successfully updated profile for trainee ${uid}.` };
+
+  } catch (error) {
+    functions.logger.error(`Error updating profile for trainee ${uid}:`, error);
+    throw new functions.https.HttpsError("internal", "An error occurred while updating the profile.");
   }
 });
