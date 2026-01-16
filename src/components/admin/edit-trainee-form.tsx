@@ -47,14 +47,14 @@ const formSchema = z.object({
   lastNameAr: z.string().min(2, 'اسم العائلة (بالعربية) مطلوب'),
   firstNameEn: z.string().min(2, 'الاسم الأول (باللاتينية) مطلوب'),
   lastNameEn: z.string().min(2, 'اسم العائلة (باللاتينية) مطلوب'),
-  dateOfBirth: z.string({ required_error: "تاريخ الميلاد مطلوب." }).min(1, "تاريخ الميلاد مطلوب."),
-  placeOfBirth: z.string({ required_error: "مكان الميلاد مطلوب." }).min(2, "مكان الميلاد مطلوب."),
+  dateOfBirth: z.string().min(1, "تاريخ الميلاد مطلوب."),
+  placeOfBirth: z.string().min(2, "مكان الميلاد مطلوب."),
   licenseType: z.string().min(1, "نوع الرخصة مطلوب"),
   status: z.enum(['في الانتظار', 'مؤكد', 'مكتمل', 'ملغي']).default('في الانتظار'),
   examType: z.string().optional(),
   totalAmount: z.preprocess(
     (val) => (val === "" ? undefined : Number(val)),
-    z.number({ invalid_type_error: 'يجب أن يكون رقماً' }).positive('يجب أن يكون المبلغ أكبر من صفر').optional()
+    z.number({ invalid_type_error: 'يجب أن يكون رقماً' }).min(0, 'المبلغ الإجمالي لا يمكن أن يكون سالبًا').optional()
   ),
   paidAmount: z.preprocess(
     (val) => (val === "" ? undefined : Number(val)),
@@ -81,19 +81,7 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-        firstNameAr: '',
-        lastNameAr: '',
-        firstNameEn: '',
-        lastNameEn: '',
-        dateOfBirth: '',
-        placeOfBirth: '',
-        licenseType: '',
-        status: 'في الانتظار',
-        examType: 'NONE',
-        totalAmount: 0,
-        paidAmount: 0,
-    },
+    defaultValues: {},
   });
 
   useEffect(() => {
@@ -112,7 +100,7 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
         paidAmount: trainee.paidAmount || 0,
       });
     }
-  }, [trainee, form.reset]);
+  }, [trainee, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -224,3 +212,5 @@ export default function EditTraineeForm({ trainee, licenseCategories, exams, onF
     </Form>
   );
 }
+
+    

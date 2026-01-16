@@ -107,7 +107,7 @@ export default function ManagePaymentDialog({ trainee, open, onOpenChange, onPay
 
       return () => unsubscribe(); // Cleanup listener
     }
-  }, [open, trainee, form.reset, toast]);
+  }, [open, trainee, form, toast]);
 
   if (!trainee) return null;
 
@@ -226,5 +226,7 @@ export default function ManagePaymentDialog({ trainee, open, onOpenChange, onPay
     </Dialog>
   );
 }
+
+    
 
     

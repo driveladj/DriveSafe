@@ -85,7 +85,7 @@ export default function FinancialsPage() {
         { total: 0, paid: 0, remaining: 0 }
     );
 
-    if (loadingData && trainees.length === 0) {
+    if (authLoading || loadingData) {
         return <div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
     }
 
@@ -191,5 +191,7 @@ export default function FinancialsPage() {
         </>
     );
 }
+
+    
 
     
