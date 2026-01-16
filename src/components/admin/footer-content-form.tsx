@@ -15,12 +15,12 @@ import { Skeleton } from '../ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 const formSchema = z.object({
-  phone: z.string(),
-  email: z.string().email('بريد إلكتروني غير صالح').or(z.literal('')),
-  facebookUrl: z.string().url('رابط فيسبوك غير صالح').optional().or(z.literal('')),
-  workHoursWeek: z.string(),
-  workHoursSat: z.string(),
-  workHoursSun: z.string(),
+  phone: z.string().optional(),
+  email: z.string().email('بريد إلكتروني غير صالح').optional().or(z.literal('')),
+  facebookUrl: z.string().optional(),
+  workHoursWeek: z.string().optional(),
+  workHoursSat: z.string().optional(),
+  workHoursSun: z.string().optional(),
 });
 
 export default function FooterContentForm() {
@@ -123,21 +123,21 @@ export default function FooterContentForm() {
                 <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
                         <FormLabel>رقم الهاتف</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="email" render={({ field }) => (
                     <FormItem>
                         <FormLabel>البريد الإلكتروني</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="facebookUrl" render={({ field }) => (
                     <FormItem>
                         <FormLabel>رابط صفحة فيسبوك</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -152,21 +152,21 @@ export default function FooterContentForm() {
                  <FormField control={form.control} name="workHoursWeek" render={({ field }) => (
                     <FormItem>
                         <FormLabel>أيام الأسبوع (الاثنين - الجمعة)</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                  <FormField control={form.control} name="workHoursSat" render={({ field }) => (
                     <FormItem>
                         <FormLabel>يوم السبت</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                  <FormField control={form.control} name="workHoursSun" render={({ field }) => (
                     <FormItem>
                         <FormLabel>يوم الأحد</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
+                        <FormControl><Input {...field} value={field.value ?? ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
