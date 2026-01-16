@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,12 +15,12 @@ import { Skeleton } from '../ui/skeleton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 const formSchema = z.object({
-  phone: z.string().min(1, 'رقم الهاتف مطلوب'),
-  email: z.string().email('بريد إلكتروني غير صالح'),
+  phone: z.string(),
+  email: z.string().email('بريد إلكتروني غير صالح').or(z.literal('')),
   facebookUrl: z.string().url('رابط فيسبوك غير صالح').optional().or(z.literal('')),
-  workHoursWeek: z.string().min(1, 'ساعات عمل الأسبوع مطلوبة'),
-  workHoursSat: z.string().min(1, 'ساعات عمل السبت مطلوبة'),
-  workHoursSun: z.string().min(1, 'حالة يوم الأحد مطلوبة'),
+  workHoursWeek: z.string(),
+  workHoursSat: z.string(),
+  workHoursSun: z.string(),
 });
 
 export default function FooterContentForm() {
@@ -31,7 +30,14 @@ export default function FooterContentForm() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      phone: '',
+      email: '',
+      facebookUrl: '',
+      workHoursWeek: '',
+      workHoursSat: '',
+      workHoursSun: '',
+    },
   });
 
   useEffect(() => {
@@ -41,7 +47,15 @@ export default function FooterContentForm() {
       try {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          form.reset(docSnap.data() as z.infer<typeof formSchema>);
+          const data = docSnap.data();
+           form.reset({
+            phone: data.phone || '',
+            email: data.email || '',
+            facebookUrl: data.facebookUrl || '',
+            workHoursWeek: data.workHoursWeek || '',
+            workHoursSat: data.workHoursSat || '',
+            workHoursSun: data.workHoursSun || '',
+          });
         } else {
           // Set default values if document doesn't exist
           form.reset({
