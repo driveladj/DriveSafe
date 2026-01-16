@@ -19,7 +19,6 @@ import { Loader2, PlusCircle, Trash2 } from 'lucide-react';
 interface PrintHeaderDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  // **MODIFIED**: Instead of onPrint, we have onSave which passes the data up
   onSave: (header: string[][]) => void;
 }
 
@@ -81,13 +80,7 @@ export default function PrintHeaderDialog({ open, onOpenChange, onSave }: PrintH
     try {
       const docRef = doc(db, 'settings', 'printHeader');
       await setDoc(docRef, { rowsJSON: JSON.stringify(headerRows) });
-      
-      // **MODIFIED**: Pass data to parent and close dialog. Let parent handle printing.
       onSave(headerRows);
-      onOpenChange(false);
-      
-      // **REMOVED**: No toast here to prevent it from showing in print.
-
     } catch (error) {
       console.error("Error saving print header:", error);
       toast({ title: 'خطأ', description: 'فشل حفظ الترويسة.', variant: 'destructive' });
@@ -139,7 +132,6 @@ export default function PrintHeaderDialog({ open, onOpenChange, onSave }: PrintH
         )}
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>إلغاء</Button>
-          {/* **MODIFIED**: Button now calls handleSave, not handleSaveAndPrint */}
           <Button onClick={handleSave} disabled={isSaving || isLoading}>
             {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> جاري الحفظ...</> : 'حفظ و طباعة'}
           </Button>

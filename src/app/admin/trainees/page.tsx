@@ -80,10 +80,11 @@ export default function TraineesPage() {
 
     useEffect(() => {
         if (isPrinting) {
-            setTimeout(() => {
+            const timer = setTimeout(() => {
                 window.print();
                 setIsPrinting(false);
-            }, 0);
+            }, 100); // Use a small but non-zero delay
+            return () => clearTimeout(timer);
         }
     }, [isPrinting]);
 
