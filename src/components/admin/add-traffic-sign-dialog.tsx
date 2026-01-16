@@ -24,24 +24,28 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, Upload, Image as ImageIcon } from 'lucide-react';
+import { Loader2, PlusCircle, Upload } from 'lucide-react';
 import { addDoc, collection } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from '@/lib/firebase';
 import Image from 'next/image';
+import type { TrafficSignCategory } from './traffic-signs-management';
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "يجب أن يكون الاسم 3 أحرف على الأقل." }),
   description: z.string().optional(),
   imageUrl: z.string().url({ message: "مطلوب رابط صورة صالح." }),
+  categoryId: z.string({ required_error: 'يجب اختيار فئة للإشارة.' }),
 });
 
 interface AddTrafficSignDialogProps {
     onSignAdded: () => void;
+    categories: TrafficSignCategory[];
 }
 
-export default function AddTrafficSignDialog({ onSignAdded }: AddTrafficSignDialogProps) {
+export default function AddTrafficSignDialog({ onSignAdded, categories }: AddTrafficSignDialogProps) {
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -83,7 +87,11 @@ export default function AddTrafficSignDialog({ onSignAdded }: AddTrafficSignDial
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true);
         try {
-            await addDoc(collection(db, 'trafficSigns'), values);
+            const category = categories.find(c => c.id === values.categoryId);
+            await addDoc(collection(db, 'trafficSigns'), {
+                ...values,
+                categoryName: category?.name || ''
+            });
             toast({ title: "نجاح!", description: "تمت إضافة إشارة مرور جديدة." });
             onSignAdded();
             form.reset();
@@ -99,7 +107,7 @@ export default function AddTrafficSignDialog({ onSignAdded }: AddTrafficSignDial
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(o) => {setOpen(o); if(!o) { form.reset(); setUploadedImageUrl(null); setFileName(null); }}}>
             <DialogTrigger asChild>
                 <Button>
                     <PlusCircle className="mr-2 h-4 w-4" /> إضافة إشارة جديدة
@@ -114,6 +122,19 @@ export default function AddTrafficSignDialog({ onSignAdded }: AddTrafficSignDial
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="categoryId" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>فئة الإشارة</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="اختر الفئة..." /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+
                         <FormField
                             control={form.control}
                             name="name"

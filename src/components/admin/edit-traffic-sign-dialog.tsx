@@ -24,25 +24,28 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Edit, Upload } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from '@/lib/firebase';
-import { TrafficSign } from './traffic-signs-management';
+import type { TrafficSign, TrafficSignCategory } from './traffic-signs-management';
 import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "يجب أن يكون الاسم 3 أحرف على الأقل." }),
   description: z.string().optional(),
   imageUrl: z.string().url({ message: "مطلوب رابط صورة صالح." }),
+  categoryId: z.string({ required_error: 'يجب اختيار فئة للإشارة.' }),
 });
 
 interface EditTrafficSignDialogProps {
     sign: TrafficSign;
+    categories: TrafficSignCategory[];
 }
 
-export default function EditTrafficSignDialog({ sign }: EditTrafficSignDialogProps) {
+export default function EditTrafficSignDialog({ sign, categories }: EditTrafficSignDialogProps) {
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -51,16 +54,18 @@ export default function EditTrafficSignDialog({ sign }: EditTrafficSignDialogPro
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: sign.name,
-            description: sign.description,
-            imageUrl: sign.imageUrl,
-        },
     });
     
     useEffect(() => {
-        form.reset(sign);
-        setPreviewImageUrl(sign.imageUrl);
+        if (open) {
+            form.reset({
+                name: sign.name,
+                description: sign.description,
+                imageUrl: sign.imageUrl,
+                categoryId: sign.categoryId,
+            });
+            setPreviewImageUrl(sign.imageUrl);
+        }
     }, [sign, form, open]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +93,11 @@ export default function EditTrafficSignDialog({ sign }: EditTrafficSignDialogPro
         setIsSubmitting(true);
         try {
             const signRef = doc(db, 'trafficSigns', sign.id);
-            await updateDoc(signRef, values);
+            const category = categories.find(c => c.id === values.categoryId);
+            await updateDoc(signRef, {
+                ...values,
+                categoryName: category?.name || ''
+            });
             toast({ title: "نجاح!", description: "تم تحديث إشارة المرور." });
             setOpen(false);
         } catch (error) {
@@ -116,6 +125,18 @@ export default function EditTrafficSignDialog({ sign }: EditTrafficSignDialogPro
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                         <FormField control={form.control} name="categoryId" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>فئة الإشارة</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="اختر الفئة..." /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {categories.map(cat => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                         <FormField
                             control={form.control}
                             name="name"
