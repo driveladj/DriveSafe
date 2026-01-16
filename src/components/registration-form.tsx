@@ -102,7 +102,7 @@ export default function RegistrationForm() {
                 email: emailForAuth,
                 licenseType: values.licenseType,
                 role: "user",
-                status: 'في الانتظار',
+                status: 'مؤكد',
                 createdAt: Timestamp.now(),
                 totalAmount: 0,
                 paidAmount: 0,
