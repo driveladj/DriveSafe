@@ -38,6 +38,13 @@ export type Course = {
     categoryId: string; // ID from LicenseCategory
     categoryName: string; // Name from LicenseCategory
     createdAt?: any; // Firestore Timestamp
+    Icon: LucideIcon;
+    image: {
+      id: string;
+      description: string;
+      imageUrl: string;
+      imageHint: string;
+    }
 };
 
 // Defines an exam in the learning path
@@ -113,6 +120,15 @@ const courseImages: {[key: string]: any} = {
 }
 
 export function getCourseVisuals(id: string) {
+    if (!id) { // Defensive check to prevent crash
+        return {
+            Icon: Book,
+            image: { 
+                imageUrl: `https://picsum.photos/seed/default/600/400`,
+                imageHint: 'driving course'
+            }
+        }
+    }
     const seed = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return {
         Icon: courseIcons[id] || Book,

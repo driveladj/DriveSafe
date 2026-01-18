@@ -6,16 +6,19 @@ import { getCourseVisuals, type Course, type Feature } from "@/lib/data";
 export async function getCourses(count?: number): Promise<Course[]> {
   try {
     const coursesColRef = collection(db, 'courses');
-    const q = count ? query(coursesColRef, limit(count)) : coursesColRef;
+    // Ensure there's a default query when no count is provided
+    const q = count ? query(coursesColRef, orderBy("createdAt", "desc"), limit(count)) : query(coursesColRef, orderBy("createdAt", "desc"));
     
     const courseSnapshot = await getDocs(q);
     if (courseSnapshot.empty) {
         console.log("No courses found in Firestore.");
         return [];
     }
-    const courseList = courseSnapshot.docs.map(doc => doc.data() as DocumentData);
+    // Correctly map doc.id along with doc.data()
+    const courseList = courseSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as DocumentData);
     
     return courseList.map(course => {
+      // The course object now correctly has an 'id' property
       const visuals = getCourseVisuals(course.id);
       return {
         ...course,
