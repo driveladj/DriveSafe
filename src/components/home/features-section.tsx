@@ -4,11 +4,9 @@
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getFeatures } from '@/lib/data-access';
-import { Feature } from '@/lib/data';
+import { Feature, staticHomePageContent } from '@/lib/data';
 import { availableIcons } from '@/lib/icons';
 import { HelpCircle, Loader2 } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 interface FeaturesContent {
   title: string;
@@ -27,22 +25,11 @@ export default function FeaturesSection() {
         const fetchedFeatures = await getFeatures();
         setFeatures(fetchedFeatures);
 
-        // Fetch content from pages/home
-        const docRef = doc(db, 'pages', 'home');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setContent({
-            title: data.featuresTitle || `لماذا تختار ${data.siteName || 'أكاديمية القيادة الآمنة'}؟`,
-            subtitle: data.featuresSubtitle || 'نحن ملتزمون بتقديم أعلى مستويات الجودة في تعليم القيادة.',
-          });
-        } else {
-          // Fallback content
-          setContent({
-            title: 'لماذا تختار أكاديمية القيادة الآمنة؟',
-            subtitle: 'نحن ملتزمون بتقديم أعلى مستويات الجودة في تعليم القيادة.',
-          });
-        }
+        // For offline version, use static content
+        setContent({
+            title: staticHomePageContent.featuresTitle,
+            subtitle: staticHomePageContent.featuresSubtitle,
+        });
 
       } catch (error) {
         console.error("Error fetching data: ", error);

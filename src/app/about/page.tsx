@@ -2,8 +2,7 @@
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { CheckCircle, ShieldCheck, Target, Camera } from "lucide-react";
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@//lib/firebase';
+import { staticAboutContent } from "@/lib/data";
 
 // Define a type for the page content for type safety
 interface AboutContent {
@@ -15,37 +14,18 @@ interface AboutContent {
   imageUrls?: string[];
 }
 
-// Async function to fetch content from Firestore
-async function getAboutContent(): Promise<AboutContent> {
-  const docRef = doc(db, 'pages', 'about');
-  try {
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      // Return data from Firestore if it exists
-      return docSnap.data() as AboutContent;
-    }
-  } catch (error) {
-    console.error("Failed to fetch about page content:", error);
-    // Fallback to default content in case of an error
-  }
-
-  // Return default content if document doesn't exist or an error occurred
-  return {
-    title: 'حول أكاديمية القيادة الآمنة',
-    subtitle: 'مهمتنا هي تمكين السائقين بالمعرفة والمهارات اللازمة للتنقل في طرق اليوم بثقة وسلامة.',
-    storyTitle: 'قصتنا',
-    storyContent: 'تأسست أكاديميتنا على يد فريق من المدربين ذوي الخبرة والشغف بالقيادة الدفاعية، ونحن ملتزمون بإنشاء جيل جديد من السائقين المسؤولين. نحن نؤمن بأن تعليم القيادة يتجاوز مجرد اجتياز الاختبار؛ إنه يتعلق بغرس عادات تدوم مدى الحياة وتحافظ على سلامة الجميع على الطريق.',
-  };
+// In the offline version, this function returns static content immediately.
+function getAboutContent(): AboutContent {
+  return staticAboutContent;
 }
 
 
-export default async function AboutPage() {
-    // Fetch the dynamic content when the page loads
-    const content = await getAboutContent();
+export default function AboutPage() {
+    // Fetch the static content when the page loads
+    const content = getAboutContent();
 
     const aboutImage = PlaceHolderImages.find(p => p.id === 'about-us-image');
     
-    // Placeholder gallery images until the upload feature is fully implemented
     const galleryImages = PlaceHolderImages.filter(p => ['course-in-action', 'driving-test', 'happy-student', 'instructor-teaching'].includes(p.id));
 
     const stats = [
@@ -103,7 +83,7 @@ export default async function AboutPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         {galleryImages.map(image => (
-                            <div key={image.id} className="group relative overflow-hidden rounded-lg shadow-lg aspect-w-1 aspect-h-1">
+                            image && <div key={image.id} className="group relative overflow-hidden rounded-lg shadow-lg aspect-w-1 aspect-h-1">
                                 <Image 
                                     src={image.imageUrl}
                                     alt={image.description}

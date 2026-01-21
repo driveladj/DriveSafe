@@ -5,8 +5,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,28 +36,14 @@ export default function SubmitTestimonialPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    try {
-      await addDoc(collection(db, 'pendingTestimonials'), {
-        ...values,
-        createdAt: Timestamp.now(),
-        status: 'pending',
-      });
-      setSubmitted(true);
-      toast({
-        title: 'تم الإرسال بنجاح!',
-        description: 'شكرًا لك على رأيك. سيتم مراجعته من قبل الإدارة.',
-      });
-      form.reset();
-    } catch (error) {
-      console.error('Error submitting testimonial:', error);
-      toast({
-        title: 'خطأ',
-        description: 'حدث خطأ أثناء إرسال رأيك. يرجى المحاولة مرة أخرى.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    // In the offline version, submission is disabled.
+    toast({
+        title: "وضع العرض فقط",
+        description: "إرسال الآراء معطل في هذه النسخة الاحتياطية.",
+        variant: "default",
+    });
+    setSubmitted(true); // Pretend it was submitted to show the thank you message
+    setIsSubmitting(false);
   }
 
   return (
@@ -85,7 +69,7 @@ export default function SubmitTestimonialPage() {
               </CardHeader>
               <CardContent>
                 <Button asChild>
-                  <Link href="/dashboard">العودة إلى لوحة التحكم</Link>
+                  <Link href="/">العودة إلى الصفحة الرئيسية</Link>
                 </Button>
               </CardContent>
             </Card>

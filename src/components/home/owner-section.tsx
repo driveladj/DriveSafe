@@ -2,8 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { staticHomePageContent } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -18,27 +17,13 @@ export default function OwnerSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchContent = async () => {
-      setLoading(true);
-      const docRef = doc(db, 'pages', 'home');
-      try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setContent({
-            ownerName: data.ownerName,
-            ownerBio: data.ownerBio,
-            ownerImageUrl: data.ownerImageUrl,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching owner's content: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContent();
+    // For offline version, use static content
+    setContent({
+        ownerName: staticHomePageContent.ownerName,
+        ownerBio: staticHomePageContent.ownerBio,
+        ownerImageUrl: staticHomePageContent.ownerImageUrl
+    });
+    setLoading(false);
   }, []);
 
   if (loading) {

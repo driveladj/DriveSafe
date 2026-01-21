@@ -5,8 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { Facebook, Phone, Mail } from "lucide-react";
 import Logo from "./logo";
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { staticFooterContent } from '@/lib/data';
 
 interface FooterContent {
   phone: string;
@@ -17,32 +16,15 @@ interface FooterContent {
   workHoursSun: string;
 }
 
-const defaultContent: FooterContent = {
-  phone: '+1 (234) 567-890',
-  email: 'contact@drivesafe.com',
-  facebookUrl: '#',
-  workHoursWeek: 'الاثنين - الجمعة: 9:00 صباحًا - 7:00 مساءً',
-  workHoursSat: 'السبت: 10:00 صباحًا - 4:00 مساءً',
-  workHoursSun: 'الأحد: مغلق',
-};
+const defaultContent: FooterContent = staticFooterContent;
 
 export default function SiteFooter() {
   const currentYear = new Date().getFullYear();
   const [content, setContent] = useState<FooterContent>(defaultContent);
 
   useEffect(() => {
-    const docRef = doc(db, 'settings', 'footer');
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setContent(docSnap.data() as FooterContent);
-      } else {
-        console.log("Footer settings not found, using default values.");
-      }
-    }, (error) => {
-      console.error("Error fetching footer settings:", error);
-    });
-
-    return () => unsubscribe();
+    // In the offline version, we just use the static content.
+    setContent(defaultContent);
   }, []);
 
   return (

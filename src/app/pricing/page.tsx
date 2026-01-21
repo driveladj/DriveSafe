@@ -4,31 +4,19 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { type PricingTier } from "@/lib/data";
+import { type PricingTier, staticPricingTiers } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Check, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 export default function PricingPage() {
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function getPricingTiers() {
-      setLoading(true);
-      try {
-        const pricesCol = query(collection(db, 'pricingTiers'), orderBy('price', 'asc'));
-        const priceSnapshot = await getDocs(pricesCol);
-        setPricingTiers(priceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as PricingTier)));
-      } catch (error) {
-        console.error("Error fetching pricing tiers:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getPricingTiers();
+    // In the offline version, we use static data.
+    setPricingTiers(staticPricingTiers);
+    setLoading(false);
   }, []);
 
   return (
@@ -99,5 +87,3 @@ export default function PricingPage() {
     </>
   );
 }
-
-    

@@ -2,11 +2,9 @@
 'use client';
 
 import { Card, CardContent } from "@/components/ui/card";
-import { type Testimonial } from "@/lib/data";
+import { type Testimonial, staticTestimonials } from "@/lib/data";
 import { Smile, Star, Users, HeartHandshake, Loader2, LucideProps, ForwardRefExoticComponent } from "lucide-react";
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 const avatarIcons: { [key: string]: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>> } = {
     'Smile': Smile,
@@ -19,19 +17,9 @@ export default function TestimonialsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const testimonialsCol = query(collection(db, 'testimonials'), orderBy('name'));
-    
-    const unsubscribe = onSnapshot(testimonialsCol, (snapshot) => {
-        const fetchedTestimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Testimonial));
-        setTestimonials(fetchedTestimonials);
-        setLoading(false);
-    }, (error) => {
-        console.error("Error fetching testimonials:", error);
-        setLoading(false);
-    });
-
-    return () => unsubscribe();
+    // For offline version, use static data
+    setTestimonials(staticTestimonials);
+    setLoading(false);
   }, []);
 
   return (

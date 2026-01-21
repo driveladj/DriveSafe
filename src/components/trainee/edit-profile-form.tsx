@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { DocumentData } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const formSchema = z.object({
   firstNameAr: z.string().min(2, 'الاسم الأول (بالعربية) مطلوب'),
@@ -44,21 +43,9 @@ export default function EditProfileForm({ userDetails }: EditProfileFormProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitting(true);
-        try {
-            const functions = getFunctions();
-            const updateTraineeProfile = httpsCallable(functions, 'updateTraineeProfile');
-            await updateTraineeProfile(values);
-            toast({
-                title: 'تم التحديث بنجاح',
-                description: 'تم تحديث معلومات ملفك الشخصي.',
-            });
-            // You might want to refresh userDetails in the auth context here
-        } catch (error: any) {
-            console.error('Error updating profile: ', error);
-            toast({ title: 'خطأ', description: error.message || 'فشل تحديث الملف الشخصي.', variant: 'destructive' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        // In the offline version, this is disabled
+        toast({ title: 'وضع العرض فقط', description: 'تحديث الملف الشخصي معطل في هذه النسخة.', variant: 'default' });
+        setIsSubmitting(false);
     }
 
     return (

@@ -7,9 +7,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -37,45 +34,13 @@ export default function LoginPage() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
-        try {
-            const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
-
-            const userCredential = await signInWithEmailAndPassword(auth, emailForAuth, values.password);
-            const user = userCredential.user;
-
-            const docRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                toast({
-                    title: "تم تسجيل الدخول بنجاح!",
-                    description: `أهلاً بعودتك، ${userData.firstName}.`,
-                });
-                
-                if (userData.role === 'admin') {
-                    router.push("/admin");
-                } else {
-                    router.push("/dashboard");
-                }
-            } else {
-                 throw new Error("لم يتم العثور على بيانات المستخدم.");
-            }
-
-        } catch (error: any) {
-            console.error("Firebase Auth Error:", error);
-            let errorMessage = "حدث خطأ أثناء تسجيل الدخول.";
-            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                errorMessage = "رقم الهاتف أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.";
-            }
-            toast({
-                title: "حدث خطأ",
-                description: errorMessage,
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
+        // In the offline version, login is disabled.
+        toast({
+            title: "وضع العرض فقط",
+            description: "تسجيل الدخول معطل في هذه النسخة الاحتياطية.",
+            variant: "default",
+        });
+        setIsLoading(false);
     }
 
   return (

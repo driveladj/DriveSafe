@@ -6,9 +6,6 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc, getDocs, collection, Timestamp, query, orderBy } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
 import React, { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button"
@@ -26,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { FormDescription } from "./ui/form"
 import type { LicenseCategory } from "@/lib/data";
+import { staticCourses } from "@/lib/data";
 
 const formSchema = z.object({
   firstNameAr: z.string().min(2, { message: "الاسم الأول (بالعربية) مطلوب." }),
@@ -49,89 +47,27 @@ export default function RegistrationForm() {
     const { toast } = useToast()
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false)
-    const [licenseCategories, setLicenseCategories] = useState<LicenseCategory[]>([]);
+    const [licenseCategories, setLicenseCategories] = useState<{id: string; name: string}[]>([]);
 
     useEffect(() => {
-      const fetchCategories = async () => {
-        const categoriesCollection = query(collection(db, 'licenseCategories'), orderBy('name', 'asc'));
-        const categorySnapshot = await getDocs(categoriesCollection);
-        const categoryList = categorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LicenseCategory));
-        setLicenseCategories(categoryList);
-      };
-
-      fetchCategories();
+      // In offline mode, use static data
+      const categories = staticCourses.map(c => ({id: c.categoryId, name: c.categoryName}));
+      const uniqueCategories = Array.from(new Set(categories.map(c => c.id)))
+        .map(id => {
+          return categories.find(c => c.id === id)!
+        });
+      setLicenseCategories(uniqueCategories);
     }, []);
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            firstNameAr: "",
-            lastNameAr: "",
-            firstNameEn: "",
-            lastNameEn: "",
-            dateOfBirth: "",
-            placeOfBirth: "",
-            phone: "",
-            password: "",
-            confirmPassword: "",
-            acceptTerms: false,
-        },
-    });
-
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsLoading(true)
-        
-        const emailForAuth = `${values.phone.replace(/[^0-9]/g, '')}@drivesafe.local`;
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, emailForAuth, values.password);
-            const user = userCredential.user;
-
-            await updateProfile(user, {
-                displayName: `${values.firstNameAr} ${values.lastNameAr}`
-            });
-
-            await setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                firstNameAr: values.firstNameAr,
-                lastNameAr: values.lastNameAr,
-                firstNameEn: values.firstNameEn,
-                lastNameEn: values.lastNameEn,
-                dateOfBirth: values.dateOfBirth,
-                placeOfBirth: values.placeOfBirth,
-                phone: values.phone,
-                email: emailForAuth,
-                licenseType: values.licenseType,
-                role: "user",
-                status: 'مؤكد',
-                createdAt: Timestamp.now(),
-                totalAmount: 0,
-                paidAmount: 0,
-            });
-
-            toast({
-                title: "تم التسجيل بنجاح!",
-                description: "مرحبًا بك. يتم الآن توجيهك إلى لوحة التحكم الخاصة بك.",
-            })
-            
-            router.push("/dashboard");
-
-        } catch (error: any) {
-            console.error("Registration Error:", error)
-            let errorMessage = "حدث خطأ غير متوقع أثناء التسجيل.";
-            if (error.code === "auth/email-already-in-use") {
-                errorMessage = "رقم الهاتف هذا مسجل بالفعل. يرجى محاولة تسجيل الدخول.";
-            } else if (error.code) {
-                errorMessage = `فشل التسجيل: ${error.message}`;
-            }
-            toast({
-                title: "فشل التسجيل",
-                description: errorMessage,
-                variant: "destructive",
-            })
-        } finally {
-            setIsLoading(false)
-        }
+        setIsLoading(true);
+        // In the offline version, registration is disabled.
+        toast({
+            title: "وضع العرض فقط",
+            description: "التسجيل معطل في هذه النسخة الاحتياطية.",
+            variant: "default",
+        });
+        setIsLoading(false);
     }
 
     return (

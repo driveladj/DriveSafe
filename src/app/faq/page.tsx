@@ -3,24 +3,18 @@
 
 import { useState, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { Loader2 } from 'lucide-react';
 import type { FAQ } from '@/lib/data';
+import { staticFaqs } from '@/lib/data';
 
 export default function FAQPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function getFaqs() {
-      setLoading(true);
-      const faqsCol = query(collection(db, 'faqs'), orderBy('order', 'asc'));
-      const faqSnapshot = await getDocs(faqsCol);
-      setFaqs(faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FAQ)));
-      setLoading(false);
-    }
-    getFaqs();
+    // In the offline version, we use static data.
+    setFaqs(staticFaqs);
+    setLoading(false);
   }, []);
 
   return (

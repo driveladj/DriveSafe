@@ -10,8 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth.tsx';
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 
 const formSchema = z.object({
   currentPassword: z.string().min(1, 'كلمة المرور الحالية مطلوبة.'),
@@ -23,7 +21,6 @@ const formSchema = z.object({
 });
 
 export default function ChangePasswordForm() {
-    const { user } = useAuth();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,31 +31,9 @@ export default function ChangePasswordForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitting(true);
-
-        if (!user || !user.email) {
-            toast({ title: 'خطأ', description: 'لم يتم العثور على المستخدم.', variant: 'destructive' });
-            setIsSubmitting(false);
-            return;
-        }
-
-        try {
-            const credential = EmailAuthProvider.credential(user.email, values.currentPassword);
-            await reauthenticateWithCredential(user, credential);
-            
-            await updatePassword(user, values.newPassword);
-
-            toast({ title: 'نجاح!', description: 'تم تغيير كلمة المرور بنجاح.' });
-            form.reset();
-        } catch (error: any) {
-            console.error('Password change error:', error);
-            let description = 'فشل تغيير كلمة المرور.';
-            if (error.code === 'auth/wrong-password') {
-                description = 'كلمة المرور الحالية غير صحيحة.';
-            }
-            toast({ title: 'خطأ', description, variant: 'destructive' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        // In the offline version, this is disabled
+        toast({ title: 'وضع العرض فقط', description: 'تغيير كلمة المرور معطل في هذه النسخة.', variant: 'default' });
+        setIsSubmitting(false);
     }
 
     return (

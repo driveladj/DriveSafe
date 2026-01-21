@@ -1,10 +1,9 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { staticTrafficSigns, staticTrafficSignCategories } from "@/lib/data";
 
-// Define the types for data fetched from Firestore
+// Define the types for data
 interface TrafficSignCategory {
     id: string;
     name: string;
@@ -19,34 +18,12 @@ interface TrafficSign {
     categoryId: string;
 }
 
-async function getTrafficSignCategories(): Promise<TrafficSignCategory[]> {
-    try {
-        const categoriesCollection = collection(db, 'trafficSignCategories');
-        const q = query(categoriesCollection, orderBy("name", "asc"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TrafficSignCategory));
-    } catch (error) {
-        console.error("Error fetching traffic sign categories: ", error);
-        return [];
-    }
-}
+// In the offline version, we use static data directly.
+const allSigns = staticTrafficSigns;
+const allCategories = staticTrafficSignCategories;
 
-async function getTrafficSigns(): Promise<TrafficSign[]> {
-    try {
-        const signsCollection = collection(db, 'trafficSigns');
-        const q = query(signsCollection, orderBy("name", "asc"));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TrafficSign));
-    } catch (error) {
-        console.error("Error fetching traffic signs: ", error);
-        return [];
-    }
-}
-
-export default async function TrafficSignsPage() {
-  const allSigns = await getTrafficSigns();
-  const allCategories = await getTrafficSignCategories();
-
+export default function TrafficSignsPage() {
+  
   const signsByCategory = allCategories.map(category => ({
     ...category,
     signs: allSigns.filter(sign => sign.categoryId === category.id)

@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { type Course } from "@/lib/data";
+import { type Course, getCourseVisuals } from "@/lib/data";
 import { getCourses } from "@/lib/data-access";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
