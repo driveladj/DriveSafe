@@ -7,7 +7,7 @@ import { Menu, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Logo from './logo';
 import { cn } from '@/lib/utils';
 import { navItems } from '@/lib/data';
@@ -69,6 +69,7 @@ export default function SiteHeader() {
             <SheetContent side="right" className="pr-0">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b">
+                   <SheetTitle className="sr-only">القائمة</SheetTitle>
                    <Logo />
                 </div>
                 <nav className="flex-grow grid gap-4 p-4 text-lg">
