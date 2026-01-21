@@ -108,4 +108,3 @@ export default function SetExamDateDialog({ traineeId, exam, onDateSet }: SetExa
     </Dialog>
   );
 }
-

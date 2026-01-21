@@ -1,3 +1,4 @@
+
 import RegistrationForm from "@/components/registration-form";
 import Link from "next/link";
 
